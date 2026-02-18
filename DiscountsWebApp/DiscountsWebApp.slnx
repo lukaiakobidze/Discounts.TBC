@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Discounts.API/Discounts.API.csproj" />
+    <Project Path="Discounts.Application/Discounts.Application.csproj" />
+    <Project Path="Discounts.Domain/Discounts.Domain.csproj" />
+    <Project Path="Discounts.Infrastructure/Discounts.Infrastructure.csproj" />
+    <Project Path="Discounts.MVC/Discounts.MVC.csproj" />
+  </Folder>
+</Solution>
