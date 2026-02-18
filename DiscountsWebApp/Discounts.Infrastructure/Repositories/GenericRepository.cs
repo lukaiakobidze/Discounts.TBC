@@ -2,8 +2,8 @@
 
 using System.Linq.Expressions;
 using Discounts.Application.Interfaces.Repositories;
-using Discounts.Domain.Entities;
 using Discounts.Data.Context;
+using Discounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Discounts.Infrastructure.Repositories
@@ -19,7 +19,7 @@ namespace Discounts.Infrastructure.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<T>> GetWhereAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
         {
             return await _dbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -53,7 +53,8 @@ namespace Discounts.Infrastructure.Repositories
         }
         public void Delete(T entity)
         {
-            _dbSet.Remove(entity);
+            entity.IsDeleted = true;
+            _dbSet.Update(entity);
         }
     }
 }

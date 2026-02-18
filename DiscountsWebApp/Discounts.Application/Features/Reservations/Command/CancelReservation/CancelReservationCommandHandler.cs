@@ -20,7 +20,7 @@ namespace Discounts.Application.Features.Reservations.Command.CancelReservation
 
         public async Task<Unit> Handle(CancelReservationCommand request, CancellationToken cancellationToken)
         {
-            var userId = _currentUserService.UserId ?? throw new ForbiddenAccessException("You Need to be logged in to cancel a reservation");
+            var userId = _currentUserService.UserId;
 
             var reservation = await _unitOfWork.Reservations.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
 

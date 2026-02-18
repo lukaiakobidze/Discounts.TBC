@@ -24,9 +24,6 @@ namespace Discounts.Application.Features.Categories.Command.CreateCategory
 
         public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            if (!_currentUserService.IsAuthenticated || !_currentUserService.IsInRole(Roles.Admin))
-                throw new ForbiddenAccessException("You need to be logged in as an admin to create a category");
-
             if (await _unitOfWork.Categories.GetByNameAsync(request.Name, cancellationToken).ConfigureAwait(false) != null)
                 throw new ConflictException($"category with name {request.Name} already exists");
 

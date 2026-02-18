@@ -1,7 +1,6 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
 using Discounts.Application.DTOs.Reservation;
-using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Mapster;
@@ -21,10 +20,7 @@ namespace Discounts.Application.Features.Reservations.Query.GetMyReservations
         }
         public async Task<IReadOnlyList<ReservationDto>> Handle(GetMyReservationsQuery request, CancellationToken cancellationToken)
         {
-            if (_currentUser.UserId == null)
-                throw new ForbiddenAccessException("You need to be logged in to see your reservations");
-
-            var reservations = await _unitOfWork.Reservations.GetByCustomerId(_currentUser.UserId, cancellationToken).ConfigureAwait(false);
+            var reservations = await _unitOfWork.Reservations.GetByCustomerId(_currentUser.UserId!, cancellationToken).ConfigureAwait(false);
 
             var dtos = reservations.Select(x =>
             {

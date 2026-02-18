@@ -25,7 +25,7 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
         }
         public async Task<CouponDto> Handle(PurchaseCouponCommand request, CancellationToken cancellationToken)
         {
-            var user = _currentUserService.UserId ?? throw new ForbiddenAccessException();
+            var user = _currentUserService.UserId;
 
             var offer = await _unitOfWork.Offers.GetByIdAsync(request.OfferId, cancellationToken).ConfigureAwait(false)
                 ?? throw new NotFoundException(nameof(Offer), request.OfferId);
@@ -40,7 +40,7 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
                 throw new ConflictException("This offer has expired.");
 
             //should add method for getting a coupon by offer id and customer id to avoid loading all coupons of the customer
-            var myCoupons = await _unitOfWork.Coupons.GetByCustomerIdAsync(user, cancellationToken).ConfigureAwait(false);
+            var myCoupons = await _unitOfWork.Coupons.GetByCustomerIdAsync(user!, cancellationToken).ConfigureAwait(false);
             if (myCoupons.Any(c => c.OfferId == offer.Id))
                 throw new ConflictException($"Customer with id:{user} has already purchased a coupon for the offer with id:{offer.Id}");
 
@@ -48,7 +48,7 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
             {
                 Code = GenerateUniqueCode(),
                 OfferId = offer.Id,
-                CustomerId = user,
+                CustomerId = user!,
                 PurchaseDate = _dateTime.UtcNow,
                 Status = CouponStatus.Active
             };
@@ -58,7 +58,7 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
 
             await _unitOfWork.Coupons.AddAsync(coupon, cancellationToken).ConfigureAwait(false);
 
-            var reservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(offer.Id, user, cancellationToken).ConfigureAwait(false);
+            var reservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(offer.Id, user!, cancellationToken).ConfigureAwait(false);
             if (reservation is not null)
             {
                 _unitOfWork.Reservations.Delete(reservation);

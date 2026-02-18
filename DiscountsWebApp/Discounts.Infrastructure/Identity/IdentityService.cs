@@ -1,8 +1,10 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
+using System.Security.Claims;
 using Discounts.Application.DTOs.Auth;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
+using Discounts.Data.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,40 +15,31 @@ namespace Discounts.Infrastructure.Identity
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly DiscountsDbContext _context;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITokenService tokenService)
+        public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            ITokenService tokenService, DiscountsDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _context = context;
         }
 
         public async Task<AuthResponseDto> LoginAsync(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false)
-                ?? throw new NotFoundException("User", email);
+                ?? throw new NotFoundException("user", email);
 
             if (user.IsBlocked)
                 throw new ForbiddenAccessException("Your account has been blocked.");
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false).ConfigureAwait(false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false).ConfigureAwait(false);
             if (!result.Succeeded)
                 throw new ForbiddenAccessException("Invalid email or password.");
 
-            var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-            var role = roles.FirstOrDefault() ?? "Customer";
-
-            var token = _tokenService.GenerateToken(user.Id, user.Email!, role);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
-            return new AuthResponseDto
-            {
-                Token = token,
-                RefreshToken = refreshToken,
-                Email = user.Email!,
-                Role = role,
-                ExpiresAt = DateTime.UtcNow.AddHours(1)
-            };
+            var role = await GetPrimaryRoleAsync(user).ConfigureAwait(false);
+            return await CreateAuthResponseAsync(user, role).ConfigureAwait(false);
         }
 
         public async Task<AuthResponseDto> RegisterAsync(string email, string password, string firstName, string lastName, string role)
@@ -65,22 +58,42 @@ namespace Discounts.Infrastructure.Identity
             };
 
             var result = await _userManager.CreateAsync(user, password).ConfigureAwait(false);
+
             if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new ValidationException(result.Errors.Select(e => new FluentValidation.Results.ValidationFailure("", e.Description)));
-            }
 
             await _userManager.AddToRoleAsync(user, role).ConfigureAwait(false);
 
-            var token = _tokenService.GenerateToken(user.Id, user.Email!, role);
-            var refreshToken = _tokenService.GenerateRefreshToken();
+            return await CreateAuthResponseAsync(user, role).ConfigureAwait(false);
+        }
+
+        public async Task<AuthResponseDto> RefreshTokenAsync(string accessToken, string refreshToken)
+        {
+            var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken)
+                ?? throw new ForbiddenAccessException("Invalid access token.");
+
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new ForbiddenAccessException("Invalid access token claims.");
+
+            var storedToken = await _context.RefreshTokens.Include(r => r.User)
+                .SingleOrDefaultAsync(r => r.Token == refreshToken && r.UserId == userId).ConfigureAwait(false);
+
+            if (storedToken == null || !storedToken.IsActive)
+                throw new ForbiddenAccessException("Invalid or expired refresh token.");
+
+            storedToken.IsRevoked = true;
+
+            var role = await GetPrimaryRoleAsync(storedToken.User).ConfigureAwait(false);
+            var newAccessToken = _tokenService.GenerateAccessToken(userId, storedToken.User.Email!, role);
+            var newRefreshToken = await StoreNewRefreshTokenAsync(userId).ConfigureAwait(false);
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return new AuthResponseDto
             {
-                Token = token,
-                RefreshToken = refreshToken,
-                Email = user.Email!,
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken,
+                Email = storedToken.User.Email!,
                 Role = role,
                 ExpiresAt = DateTime.UtcNow.AddHours(1)
             };
@@ -92,7 +105,7 @@ namespace Discounts.Infrastructure.Identity
                 ? await _userManager.Users.ToListAsync().ConfigureAwait(false)
                 : (await _userManager.GetUsersInRoleAsync(role).ConfigureAwait(false)).ToList();
 
-            var userDtos = new List<UserDto>();
+            var userDtos = new List<UserDto>(users.Count);
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
@@ -133,6 +146,45 @@ namespace Discounts.Infrastructure.Identity
         {
             var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
             return user != null && await _userManager.IsInRoleAsync(user, role).ConfigureAwait(false);
+        }
+
+        private async Task<AuthResponseDto> CreateAuthResponseAsync(ApplicationUser user, string role)
+        {
+            var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, role);
+            var refreshToken = await StoreNewRefreshTokenAsync(user.Id).ConfigureAwait(false);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            return new AuthResponseDto
+            {
+                Token = accessToken,
+                RefreshToken = refreshToken,
+                Email = user.Email!,
+                Role = role,
+                ExpiresAt = DateTime.UtcNow.AddHours(1)
+            };
+        }
+
+        private async Task<string> StoreNewRefreshTokenAsync(string userId)
+        {
+            var tokenValue = _tokenService.GenerateRefreshToken();
+
+            var refreshToken = new RefreshToken
+            {
+                Token = tokenValue,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                IsRevoked = false
+            };
+
+            await _context.RefreshTokens.AddAsync(refreshToken).ConfigureAwait(false);
+            return tokenValue;
+        }
+
+        private async Task<string> GetPrimaryRoleAsync(ApplicationUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+            return roles.FirstOrDefault() ?? "Customer";
         }
     }
 }

@@ -4,6 +4,7 @@ using Discounts.Application.DTOs.Offers;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
+using Discounts.Domain.Constants;
 using Discounts.Domain.Entities;
 using Mapster;
 using MediatR;
@@ -31,7 +32,7 @@ namespace Discounts.Application.Features.Offers.Command.UpdateOffer
             if (offer.MerchantId != _currentUser.UserId)
                 throw new ForbiddenAccessException("You can only edit your own offers.");
 
-            var editWindowHours = await _unitOfWork.GlobalSettings.GetIntValueAsync("MerchantEditWindowHours", 24, cancellationToken).ConfigureAwait(false);
+            var editWindowHours = await _unitOfWork.GlobalSettings.GetIntValueAsync(GlobalSettingConstants.MerchantEditWindowHours, 24, cancellationToken).ConfigureAwait(false);
             if ((_dateTime.UtcNow - offer.CreatedAt).TotalHours > editWindowHours)
                 throw new ForbiddenAccessException($"Offers can only be edited within {editWindowHours} hours of creation.");
 

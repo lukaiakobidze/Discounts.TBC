@@ -15,20 +15,15 @@ namespace Discounts.Application.Features.Offers.Command.CreateOffer
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
-        private readonly IDateTimeProvider _dateTime;
 
-        public CreateOfferCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, IDateTimeProvider dateTime)
+        public CreateOfferCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
-            _dateTime = dateTime;
         }
 
         public async Task<OfferDto> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(_currentUser.UserId))
-                throw new ForbiddenAccessException();
-
             var category = await _unitOfWork.Categories.GetByIdAsync(request.CategoryId, cancellationToken).ConfigureAwait(false)
                 ?? throw new NotFoundException(nameof(Category), request.CategoryId);
 
@@ -45,7 +40,7 @@ namespace Discounts.Application.Features.Offers.Command.CreateOffer
                 Status = OfferStatus.Pending,
                 ValidFrom = request.ValidFrom,
                 ValidTo = request.ValidTo,
-                MerchantId = _currentUser.UserId,
+                MerchantId = _currentUser.UserId!,
                 CategoryId = request.CategoryId
             };
 

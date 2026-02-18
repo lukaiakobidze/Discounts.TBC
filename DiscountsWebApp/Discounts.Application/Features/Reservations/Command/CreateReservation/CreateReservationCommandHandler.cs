@@ -4,6 +4,7 @@ using Discounts.Application.DTOs.Reservation;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
+using Discounts.Domain.Constants;
 using Discounts.Domain.Entities;
 using Mapster;
 using MediatR;
@@ -25,15 +26,12 @@ namespace Discounts.Application.Features.Reservations.Command.CreateReservation
 
         public async Task<ReservationDto> Handle(CreateReservationCommand request, CancellationToken cancellationToken)
         {
-            if(_currentUserService.UserId == null)
-                throw new ForbiddenAccessException("You need to log in to make a reservation");
-
             var offer = await _unitOfWork.Offers.GetByIdAsync(request.OfferId, cancellationToken).ConfigureAwait(false);
 
             if (offer == null)
                 throw new NotFoundException(nameof(offer), request.OfferId);
 
-            var existingReservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(request.OfferId, _currentUserService.UserId, cancellationToken).ConfigureAwait(false);
+            var existingReservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(request.OfferId, _currentUserService.UserId!, cancellationToken).ConfigureAwait(false);
 
             if (existingReservation != null)
                 throw new ConflictException("You can only make a reservation once for an offer.");
@@ -41,7 +39,7 @@ namespace Discounts.Application.Features.Reservations.Command.CreateReservation
             if (offer.RemainingCount < 1)
                 throw new ConflictException("No remaining coupons to reserve");
 
-            var duration = await _unitOfWork.GlobalSettings.GetIntValueAsync("ReservationDurationMinutes", 30, cancellationToken).ConfigureAwait(false);
+            var duration = await _unitOfWork.GlobalSettings.GetIntValueAsync(GlobalSettingConstants.ReservationDurationMinutes, 30, cancellationToken).ConfigureAwait(false);
 
             var reservation = new Reservation()
             {

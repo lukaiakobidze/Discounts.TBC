@@ -22,9 +22,7 @@ namespace Discounts.Application.Features.Coupons.Query.GetMyCoupons
 
         public async Task<IReadOnlyList<CouponDto>> Handle(GetMyCouponsQuery request, CancellationToken cancellationToken)
         {
-            var userId = _currentUserService.UserId ?? throw new ForbiddenAccessException();
-
-            var coupons = await _unitOfWork.Coupons.GetByCustomerIdAsync(userId, cancellationToken).ConfigureAwait(false);
+            var coupons = await _unitOfWork.Coupons.GetByCustomerIdAsync(_currentUserService.UserId!, cancellationToken).ConfigureAwait(false);
 
             var dtos = coupons.Select(x =>
             {

@@ -24,9 +24,7 @@ namespace Discounts.Application.Features.Coupons.Command.UseCoupon
             var coupon = await _unitOfWork.Coupons.GetByCodeAsync(request.Code, cancellationToken).ConfigureAwait(false)
                 ?? throw new NotFoundException(nameof(Coupon), request.Code);
 
-            var customerId = _currentUser.UserId ?? throw new ForbiddenAccessException("You must be logged in to use a coupon.");
-
-            if (coupon.CustomerId != customerId)
+            if (coupon.CustomerId != _currentUser.UserId)
                 throw new ForbiddenAccessException("You can only use your own coupons.");
 
             if (coupon.Status != CouponStatus.Active)

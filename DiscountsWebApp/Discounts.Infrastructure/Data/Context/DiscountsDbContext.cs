@@ -16,6 +16,7 @@ namespace Discounts.Data.Context
         public DbSet<Reservation> Reservations => Set<Reservation>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<GlobalSetting> GlobalSettings => Set<GlobalSetting>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

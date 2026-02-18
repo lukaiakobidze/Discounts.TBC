@@ -17,14 +17,13 @@ namespace Discounts.Infrastructure
 {
     public static class InfrastuctureDependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<AuditFieldsInterceptor>();
-
             services.AddDbContext<DiscountsDbContext>((serviceProvider, options) =>
             {
                 var interceptor = serviceProvider.GetRequiredService<AuditFieldsInterceptor>();
-                options.UseSqlServer(serviceProvider.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
                     .AddInterceptors(interceptor);
             });
 
@@ -40,6 +39,12 @@ namespace Discounts.Infrastructure
                 .AddEntityFrameworkStores<DiscountsDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
             services.AddScoped<IOfferRepository, OfferRepository>();
             services.AddScoped<ICouponRepository, CouponRepository>();
             services.AddScoped<IReservationRepository, ReservationRepository>();
@@ -47,13 +52,8 @@ namespace Discounts.Infrastructure
             services.AddScoped<IGlobalSettingRepository, GlobalSettingRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddScoped<IIdentityService, IdentityService>();
-            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
             services.AddHealthChecks()
-            .AddCheck<DatabaseHealthCheck>("database");
+                .AddCheck<DatabaseHealthCheck>("database");
 
             services.AddHttpContextAccessor();
 
