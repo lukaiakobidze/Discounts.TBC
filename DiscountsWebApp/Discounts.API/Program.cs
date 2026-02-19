@@ -55,6 +55,7 @@ namespace Discounts.API
                     await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
                     await RoleSeed.SeedRolesAsync(scope.ServiceProvider).ConfigureAwait(false);
                     await AdminSeed.SeedAdminAsync(scope.ServiceProvider).ConfigureAwait(false);
+                    await CategorySeed.SeedCategoriesAsync(scope.ServiceProvider).ConfigureAwait(false);
                 }
 
                 if (app.Environment.IsDevelopment())

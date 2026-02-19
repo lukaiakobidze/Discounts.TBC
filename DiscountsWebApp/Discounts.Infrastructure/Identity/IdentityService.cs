@@ -7,6 +7,7 @@ using Discounts.Application.Interfaces.Auth;
 using Discounts.Data.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Discounts.Infrastructure.Identity
 {
@@ -16,14 +17,16 @@ namespace Discounts.Infrastructure.Identity
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly DiscountsDbContext _context;
+        private readonly JwtSettings _jwtSettings;
 
         public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            ITokenService tokenService, DiscountsDbContext context)
+            ITokenService tokenService, DiscountsDbContext context, IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
             _context = context;
+            _jwtSettings = jwtSettings.Value;
         }
 
         public async Task<AuthResponseDto> LoginAsync(string email, string password)
@@ -95,7 +98,7 @@ namespace Discounts.Infrastructure.Identity
                 RefreshToken = newRefreshToken,
                 Email = storedToken.User.Email!,
                 Role = role,
-                ExpiresAt = DateTime.UtcNow.AddHours(1)
+                ExpiresAt = DateTime.UtcNow.AddHours(_jwtSettings.AccessTokenExpirationHours)
             };
         }
 
@@ -173,7 +176,7 @@ namespace Discounts.Infrastructure.Identity
                 Token = tokenValue,
                 UserId = userId,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                ExpiresAt = DateTime.UtcNow.AddHours(_jwtSettings.RefreshTokenbExpirationHours),
                 IsRevoked = false
             };
 

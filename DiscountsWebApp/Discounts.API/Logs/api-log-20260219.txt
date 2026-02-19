@@ -227,3 +227,30 @@ System.InvalidOperationException: A second operation was started on this context
 2026-02-19 03:10:04.842 +04:00 [INF] Handling GetUsersQuery
 2026-02-19 03:10:04.922 +04:00 [INF] Handled GetUsersQuery in 77ms
 2026-02-19 03:10:04.927 +04:00 [INF] HTTP GET /api/v1/Admin/users responded 200 in 126.5329 ms
+2026-02-19 15:28:22.883 +04:00 [INF] HTTP GET /api/v1/Admin/dashboard responded 401 in 1536.5963 ms
+2026-02-19 15:29:02.444 +04:00 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-02-19 15:29:02.510 +04:00 [INF] Handling RefreshTokenCommand
+2026-02-19 15:29:02.963 +04:00 [INF] Handled RefreshTokenCommand in 450ms
+2026-02-19 15:29:02.981 +04:00 [INF] HTTP POST /api/v1/Auth/refresh-token responded 200 in 575.3769 ms
+2026-02-19 15:29:30.221 +04:00 [INF] Handling AdminDashboardQuery
+2026-02-19 15:29:30.340 +04:00 [INF] Handled AdminDashboardQuery in 117ms
+2026-02-19 15:29:30.345 +04:00 [INF] HTTP GET /api/v1/Admin/dashboard responded 200 in 147.5861 ms
+2026-02-19 15:36:07.188 +04:00 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-02-19 15:36:07.223 +04:00 [INF] Handling AdminDashboardQuery
+2026-02-19 15:36:07.383 +04:00 [INF] Handled AdminDashboardQuery in 154ms
+2026-02-19 15:36:07.405 +04:00 [INF] HTTP GET /api/v1/Admin/dashboard responded 200 in 366.8176 ms
+2026-02-19 15:36:18.015 +04:00 [INF] Handling GetAllCategoriesQuery
+2026-02-19 15:36:18.147 +04:00 [INF] Handled GetAllCategoriesQuery in 129ms
+2026-02-19 15:36:18.154 +04:00 [INF] HTTP GET /api/v1/Categories responded 200 in 188.6290 ms
+2026-02-19 15:56:46.904 +04:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: No service for type 'Discounts.Infrastructure.Repositories.UnitOfWork' has been registered.
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Discounts.Infrastructure.Data.Seed.CategorySeed.SeedCategoriesAsync(IServiceProvider serviceProvider) in D:\CODING\C#\TBCFinalProject\DiscountsWebApp\DiscountsWebApp\Discounts.Infrastructure\Data\Seed\CategorySeed.cs:line 13
+   at Discounts.API.Program.Main(String[] args) in D:\CODING\C#\TBCFinalProject\DiscountsWebApp\DiscountsWebApp\Discounts.API\Program.cs:line 58
+2026-02-19 15:57:45.121 +04:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: No service for type 'Discounts.Infrastructure.Repositories.UnitOfWork' has been registered.
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Discounts.Infrastructure.Data.Seed.CategorySeed.SeedCategoriesAsync(IServiceProvider serviceProvider) in D:\CODING\C#\TBCFinalProject\DiscountsWebApp\DiscountsWebApp\Discounts.Infrastructure\Data\Seed\CategorySeed.cs:line 13
+   at Discounts.API.Program.Main(String[] args) in D:\CODING\C#\TBCFinalProject\DiscountsWebApp\DiscountsWebApp\Discounts.API\Program.cs:line 58
