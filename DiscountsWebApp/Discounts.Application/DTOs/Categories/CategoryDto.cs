@@ -1,6 +1,6 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
-namespace Discounts.Application.DTOs.Category
+namespace Discounts.Application.DTOs.Categories
 {
     public class CategoryDto
     {

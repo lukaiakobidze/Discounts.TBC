@@ -1,0 +1,34 @@
+@model IReadOnlyList<Discounts.Application.DTOs.Auth.UserDto>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h2 class="mb-4">Users</h2>
+<table class="table table-hover">
+    <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.FirstName @user.LastName</td>
+                <td><span class="badge bg-info">@user.Role</span></td>
+                <td>@(user.IsBlocked ? "Blocked" : "Active")</td>
+                <td>
+                    @if (user.IsBlocked)
+                    {
+                        <form asp-action="Unblock" asp-route-id="@user.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-success">Unblock</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Block" asp-route-id="@user.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-warning">Block</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

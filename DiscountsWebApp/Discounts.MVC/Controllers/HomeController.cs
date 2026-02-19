@@ -1,32 +1,32 @@
-using Discounts.MVC.Models;
+// Copyright (C) TBC Bank. All Rights Reserved.
+
+using Discounts.Application.Features.Categories.Query.GetAllCategories;
+using Discounts.Application.Features.Offers.Query.SearchOffers;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace Discounts.MVC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ISender _sender;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ISender sender)
         {
-            _logger = logger;
+            _sender = sender;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var offers = await _sender.Send(new SearchOffersQuery(PageNumber: 1, PageSize: 6)).ConfigureAwait(false);
+            var categories = await _sender.Send(new GetAllCategoriesQuery()).ConfigureAwait(false);
+            ViewBag.Categories = categories;
+            return View(offers.Items);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }

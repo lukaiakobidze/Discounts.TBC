@@ -11,7 +11,7 @@ namespace Discounts.Application.Features.Offers.Command.UpdateOffer
     public record UpdateOfferCommand(
         Guid Id,
         string Title,
-        string Description,
+        string? Description,
         string? ImagePath,
         decimal OriginalPrice,
         decimal DiscountedPrice,

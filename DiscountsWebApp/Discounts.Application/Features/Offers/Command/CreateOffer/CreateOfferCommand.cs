@@ -10,7 +10,7 @@ namespace Discounts.Application.Features.Offers.Command.CreateOffer
     [ApplicationAuthorize(Role = Roles.Merchant)]
     public record CreateOfferCommand(
         string Name,
-        string Description,
+        string? Description,
         string? ImagePath,
         decimal OriginalPrice,
         decimal DiscountedPrice,

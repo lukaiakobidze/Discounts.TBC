@@ -1,0 +1,22 @@
+@model Discounts.Application.DTOs.Stats.MerchantDashboardDto
+@{
+    ViewData["Title"] = "Merchant Dashboard";
+}
+<h2 class="mb-4">Dashboard</h2>
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3"><h3>@Model.ActiveOffers</h3><small class="text-muted">Active Offers</small></div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3"><h3>@Model.PendingOffers</h3><small class="text-muted">Pending Offers</small></div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3"><h3>@Model.TotalOffers</h3><small class="text-muted">Total Offers</small></div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3"><h3>@Model.TotalCouponsSold</h3><small class="text-muted">Coupons Sold</small></div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3"><h3>$@Model.TotalRevenue.ToString("F2")</h3><small class="text-muted">Revenue</small></div>
+    </div>
+</div>

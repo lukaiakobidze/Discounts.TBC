@@ -1,0 +1,17 @@
+@model IReadOnlyList<Discounts.Application.DTOs.Admin.GlobalSettingDto>
+@{
+    ViewData["Title"] = "Global Settings";
+}
+<h2 class="mb-4">Global Settings</h2>
+<div class="card"><div class="card-body">
+<form asp-action="Update" method="post">
+    @foreach (var s in Model)
+    {
+        <div class="mb-3">
+            <label class="form-label fw-bold">@s.Key</label>
+            <input type="text" name="settings[@s.Key]" value="@s.Value" class="form-control" />
+        </div>
+    }
+    <button type="submit" class="btn btn-highlight">Save Settings</button>
+</form>
+</div></div>

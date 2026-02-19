@@ -1,6 +1,6 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
-using Discounts.Application.DTOs.Coupon;
+using Discounts.Application.DTOs.Coupons;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
@@ -42,7 +42,7 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
             //should add method for getting a coupon by offer id and customer id to avoid loading all coupons of the customer
             var myCoupons = await _unitOfWork.Coupons.GetByCustomerIdAsync(user!, cancellationToken).ConfigureAwait(false);
             if (myCoupons.Any(c => c.OfferId == offer.Id))
-                throw new ConflictException($"Customer with id:{user} has already purchased a coupon for the offer with id:{offer.Id}");
+                throw new ConflictException($"You have already purchased a coupon for the offer: {offer.Name}.");
 
             var coupon = new Coupon
             {
@@ -54,15 +54,16 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
             };
 
             offer.RemainingCount -= 1;
-            _unitOfWork.Offers.Update(offer);
 
             await _unitOfWork.Coupons.AddAsync(coupon, cancellationToken).ConfigureAwait(false);
 
             var reservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(offer.Id, user!, cancellationToken).ConfigureAwait(false);
             if (reservation is not null)
             {
+                offer.RemainingCount += 1;
                 _unitOfWork.Reservations.Delete(reservation);
             }
+            _unitOfWork.Offers.Update(offer);
 
             try
             {

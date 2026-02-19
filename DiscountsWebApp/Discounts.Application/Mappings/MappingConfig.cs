@@ -1,9 +1,9 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
-using Discounts.Application.DTOs.Category;
-using Discounts.Application.DTOs.Coupon;
+using Discounts.Application.DTOs.Categories;
+using Discounts.Application.DTOs.Coupons;
 using Discounts.Application.DTOs.Offers;
-using Discounts.Application.DTOs.Reservation;
+using Discounts.Application.DTOs.Reservations;
 using Discounts.Domain.Entities;
 using Mapster;
 

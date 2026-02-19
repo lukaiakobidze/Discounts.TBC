@@ -55,7 +55,8 @@ publish/
 
 # Logs
 *.log
-Logs/
+DiscountsWebApp/Discounts.API/Logs/
+DiscountsWebApp/Discounts.MVC/Logs/
 
 # OS files
 .DS_Store

@@ -1,8 +1,69 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model IReadOnlyList<Discounts.Application.DTOs.Offers.OfferDto>?
+@{
+    ViewData["Title"] = "Home";
+    var categories = ViewBag.Categories as IReadOnlyList<Discounts.Application.DTOs.Categories.CategoryDto>;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center py-5 mb-4" style="background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; color: white;">
+    <h1 class="display-4 fw-bold">Discover Amazing Deals</h1>
+    <p class="lead mb-4">Find the best discounts and save big on your favorite products</p>
+    <a asp-controller="OfferBrowse" asp-action="Index" class="btn btn-highlight btn-lg px-5">
+        <i class="fas fa-search me-2"></i>Browse All Offers
+    </a>
 </div>
+
+@if (categories != null && categories.Any())
+{
+    <h3 class="mb-3">Categories</h3>
+    <div class="row mb-5">
+        @foreach (var cat in categories)
+        {
+            <div class="col-md-3 mb-3">
+                <a asp-controller="OfferBrowse" asp-action="Index" asp-route-categoryId="@cat.Id" class="text-decoration-none">
+                    <div class="card text-center p-3">
+                        <i class="fas fa-folder-open fa-2x mb-2" style="color: var(--accent);"></i>
+                        <h6>@cat.Name</h6>
+                        <small class="text-muted">@cat.OfferCount offers</small>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <h3 class="mb-3">Recent Offers</h3>
+    <div class="row">
+        @foreach (var offer in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-secondary">@offer.CategoryName</span>
+                            @if (offer.IsSoldOut)
+                            {
+                                <span class="badge bg-dark">Sold Out</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-discount">-@offer.DiscountPercentage%</span>
+                            }
+                        </div>
+                        <h5 class="card-title">@offer.Name</h5>
+                        @if(offer.Description != null)
+                        {
+                            <p class="card-text text-muted small">@(offer.Description.Length > 100 ? offer.Description[..100] + "..." : offer.Description)</p>
+                        }
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="text-decoration-line-through text-muted">$@offer.OriginalPrice.ToString("F2")</span>
+                            <span class="h5 text-danger mb-0">$@offer.DiscountedPrice.ToString("F2")</span>
+                        </div>
+                        <a asp-controller="OfferBrowse" asp-action="Details" asp-route-id="@offer.Id" class="btn btn-outline-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

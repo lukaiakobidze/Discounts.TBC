@@ -1,49 +1,118 @@
-﻿<!DOCTYPE html>
+@using Discounts.Domain.Constants
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Discounts.MVC</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Discounts.MVC.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - TBC Discounts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <style>
+        :root { --primary: #1a1a2e; --secondary: #16213e; --accent: #0f3460; --highlight: #e94560; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f6fa; }
+        .navbar { background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; }
+        .navbar-brand { font-weight: 700; letter-spacing: 1px; }
+        .btn-highlight { background: var(--highlight); color: white; border: none; }
+        .btn-highlight:hover { background: #d63851; color: white; }
+        .card { border: none; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border-radius: 12px; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); }
+        .badge-discount { background: var(--highlight); font-size: 0.9rem; }
+        footer { background: var(--primary); color: #ccc; padding: 2rem 0; margin-top: 4rem; }
+    </style>
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Discounts.MVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            &copy; 2026 - Discounts.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <i class="fas fa-tags me-2"></i>TBC Discounts
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="OfferBrowse" asp-action="Index">Browse Offers</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        @if (User.IsInRole(Roles.Admin))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="fas fa-shield-alt me-1"></i>Admin
+                                </a>
+                            </li>
+                        }
+                        @if (User.IsInRole(Roles.Merchant))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Merchant" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="fas fa-store me-1"></i>Merchant
+                                </a>
+                            </li>
+                        }
+                        @if (User.IsInRole(Roles.Customer))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Customer" asp-action="MyCoupons">
+                                    <i class="fas fa-ticket-alt me-1"></i>My Coupons
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="nav-link btn btn-link">
+                                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                </button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-highlight btn-sm ms-2 px-3" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <p>&copy; @DateTime.Now.Year TBC Discounts - IT Academy Project</p>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

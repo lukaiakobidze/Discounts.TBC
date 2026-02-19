@@ -1,7 +1,7 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
 using Discounts.Application.Attributes;
-using Discounts.Application.DTOs.Coupon;
+using Discounts.Application.DTOs.Coupons;
 using Discounts.Domain.Constants;
 using MediatR;
 

@@ -1,0 +1,36 @@
+@model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Offers.OfferDto>
+@{
+    ViewData["Title"] = "Offer Moderation";
+}
+
+<h2 class="mb-4">Pending Offers</h2>
+
+@if (Model.Items.Any())
+{
+    <table class="table table-hover">
+        <thead><tr><th>Title</th><th>Merchant</th><th>Price</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody>
+            @foreach (var offer in Model.Items)
+            {
+                <tr>
+                    <td>@offer.Name</td>
+                    <td>@offer.MerchantId</td>
+                    <td><s>$@offer.OriginalPrice.ToString("F2")</s> → $@offer.DiscountedPrice.ToString("F2")</td>
+                    <td>@offer.CreatedAt.ToString("MMM dd")</td>
+                    <td>
+                        <form asp-action="Approve" asp-route-id="@offer.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                        </form>
+                        <form asp-action="Reject" asp-route-id="@offer.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">No pending offers to review.</p>
+}

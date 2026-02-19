@@ -27,7 +27,7 @@ namespace Discounts.Application.Features.Auth.Command.Register
 
             RuleFor(x => x.Role)
                 .NotEmpty().WithMessage("Role is required.")
-                .Must(r => r is Roles.Merchant or Roles.Customer)
+                .Must(r => r.Equals(Roles.Merchant, StringComparison.CurrentCultureIgnoreCase) || r.Equals(Roles.Customer, StringComparison.CurrentCultureIgnoreCase))
                 .WithMessage("Role must be either 'Merchant' or 'Customer'.");
         }
     }

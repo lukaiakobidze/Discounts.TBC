@@ -1,0 +1,52 @@
+@model Discounts.MVC.ViewModels.OfferViewModel
+@{
+    ViewData["Title"] = "Edit Offer";
+}
+<h2 class="mb-4">Edit Offer</h2>
+<div class="card"><div class="card-body">
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="CategoryId" class="form-label">Category</label>
+            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label asp-for="OriginalPrice" class="form-label"></label>
+            <input asp-for="OriginalPrice" class="form-control" type="number" step="0.01" />
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="DiscountedPrice" class="form-label"></label>
+            <input asp-for="DiscountedPrice" class="form-control" type="number" step="0.01" />
+        </div>
+        <div class="col-md-3 mb-3">
+            <label asp-for="RemainingCoupons" class="form-label"></label>
+            <input asp-for="RemainingCoupons" class="form-control" type="number" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="ValidFrom" class="form-label"></label>
+            <input asp-for="ValidFrom" class="form-control" type="date" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="ValidTo" class="form-label"></label>
+            <input asp-for="ValidTo" class="form-control" type="date" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-highlight">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

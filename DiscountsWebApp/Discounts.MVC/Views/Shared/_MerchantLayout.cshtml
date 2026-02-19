@@ -1,0 +1,33 @@
+@{
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush rounded-3">
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Merchant" asp-controller="Dashboard" asp-action="Index">
+                        <i class="fas fa-chart-line me-2"></i>Dashboard
+                    </a>
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Merchant" asp-controller="Offer" asp-action="Index">
+                        <i class="fas fa-tags me-2"></i>My Offers
+                    </a>
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Merchant" asp-controller="Sales" asp-action="Index">
+                        <i class="fas fa-receipt me-2"></i>Sales History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @RenderBody()
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+@section Styles {
+    @RenderSection("Styles", required: false)
+}

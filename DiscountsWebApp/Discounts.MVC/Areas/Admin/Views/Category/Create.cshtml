@@ -1,0 +1,21 @@
+@model Discounts.MVC.ViewModels.CategoryViewModel
+@{
+    ViewData["Title"] = "Create Category";
+}
+<h2 class="mb-4">Create Category</h2>
+<div class="card"><div class="card-body">
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-highlight">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

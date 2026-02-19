@@ -1,6 +1,6 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
-using Discounts.Application.DTOs.Category;
+using Discounts.Application.DTOs.Categories;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;

@@ -27,7 +27,7 @@ namespace Discounts.Application.Behaviours
 
                 if (failures.Count != 0)
                 {
-                    throw new ValidationException(failures);
+                    throw new Discounts.Application.Exceptions.ValidationException(failures);
                 }
             }
 

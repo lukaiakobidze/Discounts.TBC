@@ -1,0 +1,39 @@
+@{
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush rounded-3">
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Admin" asp-controller="Moderation" asp-action="Index">
+                        <i class="fas fa-check-circle me-2"></i>Moderation
+                    </a>
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">
+                        <i class="fas fa-users me-2"></i>Users
+                    </a>
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Admin" asp-controller="Category" asp-action="Index">
+                        <i class="fas fa-folder me-2"></i>Categories
+                    </a>
+                    <a class="list-group-item list-group-item-action py-3" asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                        <i class="fas fa-cog me-2"></i>Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @RenderBody()
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+@section Styles {
+    @RenderSection("Styles", required: false)
+}

@@ -1,0 +1,29 @@
+@model IReadOnlyList<Discounts.Application.DTOs.Categories.CategoryDto>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="d-flex justify-content-between mb-4">
+    <h2>Categories</h2>
+    <a asp-action="Create" class="btn btn-highlight"><i class="fas fa-plus me-1"></i>Add Category</a>
+</div>
+
+<table class="table table-hover">
+    <thead><tr><th>Name</th><th>Description</th><th>Offers</th><th>Actions</th></tr></thead>
+    <tbody>
+        @foreach (var cat in Model)
+        {
+            <tr>
+                <td>@cat.Name</td>
+                <td>@cat.Description</td>
+                <td>@cat.OfferCount</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@cat.Id" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this category?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

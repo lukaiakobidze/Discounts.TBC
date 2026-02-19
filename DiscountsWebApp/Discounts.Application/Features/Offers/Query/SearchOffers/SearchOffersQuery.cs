@@ -7,10 +7,10 @@ using MediatR;
 namespace Discounts.Application.Features.Offers.Query.SearchOffers
 {
     public record SearchOffersQuery(
-        string? SearchTerm,
-        Guid? CategoryId,
-        decimal? MinPrice,
-        decimal? MaxPrice,
+        string? SearchTerm = null,
+        Guid? CategoryId = null,
+        decimal? MinPrice = null,
+        decimal? MaxPrice = null,
         int PageNumber = 1,
         int PageSize = 10
     ) : IRequest<PaginatedList<OfferDto>>;

@@ -1,6 +1,6 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
-using Discounts.Application.DTOs.Reservation;
+using Discounts.Application.DTOs.Reservations;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Mapster;

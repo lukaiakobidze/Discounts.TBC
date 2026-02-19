@@ -11,7 +11,7 @@ namespace Discounts.API.Extensions
     {
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            var key = Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"] ?? "TBCDiscountsSecretKey12345678901234567890!");
+            var key = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"] ?? "TBCDiscountsSecretKey12345678901234567890!");
 
             services.AddAuthentication(options =>
             {

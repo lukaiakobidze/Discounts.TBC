@@ -1,0 +1,36 @@
+@model Discounts.Application.DTOs.Stats.AdminDashboardDto
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h2 class="mb-4">Dashboard</h2>
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3">
+            <i class="fas fa-tags fa-2x mb-2" style="color:#0f3460;"></i>
+            <h3>@Model.ActiveOffers</h3>
+            <small class="text-muted">Total Active Offers</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3">
+            <i class="fas fa-clock fa-2x mb-2" style="color:#e94560;"></i>
+            <h3>@Model.PendingOffers</h3>
+            <small class="text-muted">Total Pending Offers</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3">
+            <i class="fas fa-users fa-2x mb-2" style="color:#0f3460;"></i>
+            <h3>@Model.TotalCustomers</h3>
+            <small class="text-muted">Total Customers</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center p-3">
+            <i class="fas fa-users fa-2x mb-2" style="color:#0f3460;"></i>
+            <h3>@Model.TotalMerchants</h3>
+            <small class="text-muted">Total Merchants</small>
+        </div>
+    </div>
+</div>

@@ -23,7 +23,7 @@ namespace Discounts.API.Controllers.V1
             _sender = sender;
         }
 
-        [HttpPost]
+        [HttpPost("reserve")]
         public async Task<IActionResult> Create([FromBody] CreateReservationCommand command)
         {
             var result = await _sender.Send(command).ConfigureAwait(false);

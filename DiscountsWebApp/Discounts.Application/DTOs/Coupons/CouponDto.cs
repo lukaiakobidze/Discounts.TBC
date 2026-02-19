@@ -2,7 +2,7 @@
 
 using Discounts.Domain.Enums;
 
-namespace Discounts.Application.DTOs.Coupon
+namespace Discounts.Application.DTOs.Coupons
 {
     public class CouponDto
     {
