@@ -89,6 +89,7 @@ namespace Discounts.Infrastructure.Identity
             var role = await GetPrimaryRoleAsync(storedToken.User).ConfigureAwait(false);
             var newAccessToken = _tokenService.GenerateAccessToken(userId, storedToken.User.Email!, role);
             var newRefreshToken = await StoreNewRefreshTokenAsync(userId).ConfigureAwait(false);
+            _context.RefreshTokens.Remove(storedToken);
 
             await _context.SaveChangesAsync().ConfigureAwait(false);
 

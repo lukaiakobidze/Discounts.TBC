@@ -24,23 +24,23 @@ namespace Discounts.API.Controllers.V1
         }
 
         [HttpPost("reserve")]
-        public async Task<IActionResult> Create([FromBody] CreateReservationCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateReservationCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Cancel(Guid id)
+        public async Task<IActionResult> Cancel(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new CancelReservationCommand(id)).ConfigureAwait(false);
+            await _sender.Send(new CancelReservationCommand(id), cancellationToken).ConfigureAwait(false);
             return NoContent();
         }
 
         [HttpGet("my")]
-        public async Task<IActionResult> GetMyReservations()
+        public async Task<IActionResult> GetMyReservations(CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(new GetMyReservationsQuery()).ConfigureAwait(false);
+            var result = await _sender.Send(new GetMyReservationsQuery(), cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
     }

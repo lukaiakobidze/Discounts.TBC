@@ -21,17 +21,17 @@ namespace Discounts.MVC.Areas.Admin.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index(string? role = null)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, string? role = null)
         {
-            var users = await _sender.Send(new GetUsersQuery(role)).ConfigureAwait(false);
+            var users = await _sender.Send(new GetUsersQuery(role), cancellationToken).ConfigureAwait(false);
             return View(users);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Block(string id)
+        public async Task<IActionResult> Block(string id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new BlockUserCommand(id)).ConfigureAwait(false);
+            await _sender.Send(new BlockUserCommand(id), cancellationToken).ConfigureAwait(false);
             TempData["Success"] = "User blocked.";
             return RedirectToAction(nameof(Index));
         }

@@ -4,7 +4,7 @@
 }
 <div class="d-flex justify-content-between mb-4">
     <h2>My Offers</h2>
-    <a asp-action="Create" class="btn btn-highlight"><i class="fas fa-plus me-1"></i>New Offer</a>
+    <a asp-action="Create" class="btn btn-highlight align-self-center" style="padding: 6px 12px;"><i class="fas fa-plus me-1"></i>New Offer</a>
 </div>
 <table class="table table-hover">
     <thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead>
@@ -16,8 +16,8 @@
             <td>@o.CategoryName</td>
             <td>$@o.DiscountedPrice.ToString("F2")</td>
             <td>@o.RemainingCount / @o.TotalCount</td>
-                <td><span class="badge @(o.Status == Discounts.Domain.Enums.OfferStatus.Active.ToString() ? "bg-success" : o.Status == Discounts.Domain.Enums.OfferStatus.Pending.ToString() ? "bg-warning" : "bg-danger")">@o.Status</span></td>
-            <td><a asp-action="Edit" asp-route-id="@o.Id" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                <td><span class="badge @(o.Status == Discounts.Domain.Enums.OfferStatus.Active.ToString() ? "badge-primary" : o.Status == Discounts.Domain.Enums.OfferStatus.Pending.ToString() ? "badge-category" : "bg-secondary")">@o.Status</span></td>
+            <td><a asp-action="Edit" asp-route-id="@o.Id" class="btn btn-sm btn-highlight">Edit</a></td>
         </tr>
     }
     </tbody>

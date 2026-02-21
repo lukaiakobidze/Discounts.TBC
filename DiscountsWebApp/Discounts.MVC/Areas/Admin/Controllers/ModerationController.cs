@@ -21,26 +21,26 @@ namespace Discounts.MVC.Areas.Admin.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int pageNumber = 1)
         {
-            var result = await _sender.Send(new GetPendingOffersQuery(pageNumber, 20)).ConfigureAwait(false);
+            var result = await _sender.Send(new GetPendingOffersQuery(pageNumber, 20), cancellationToken).ConfigureAwait(false);
             return View(result);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Approve(Guid id)
+        public async Task<IActionResult> Approve(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new ApproveOfferCommand(id)).ConfigureAwait(false);
+            await _sender.Send(new ApproveOfferCommand(id), cancellationToken).ConfigureAwait(false);
             TempData["Success"] = "Offer approved successfully.";
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reject(Guid id)
+        public async Task<IActionResult> Reject(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new RejectOfferCommand(id)).ConfigureAwait(false);
+            await _sender.Send(new RejectOfferCommand(id), cancellationToken).ConfigureAwait(false);
             TempData["Success"] = "Offer rejected.";
             return RedirectToAction(nameof(Index));
         }

@@ -22,23 +22,23 @@ namespace Discounts.API.Controllers.V1
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginCommand command)
+        public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
     }

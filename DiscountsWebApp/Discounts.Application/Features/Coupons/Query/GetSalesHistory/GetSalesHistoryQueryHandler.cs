@@ -22,7 +22,7 @@ namespace Discounts.Application.Features.Coupons.Query.GetSalesHistory
 
         public async Task<IReadOnlyList<CouponDto>> Handle(GetSalesHistoryQuery request, CancellationToken cancellationToken)
         {
-            var merchantOffers = await _unitOfWork.Offers.GetByMerchantId(_currentUserService.UserId!, cancellationToken).ConfigureAwait(false);
+            var merchantOffers = await _unitOfWork.Offers.GetByMerchantIdAsync(_currentUserService.UserId!, cancellationToken).ConfigureAwait(false);
             var offerIds = merchantOffers.Select(o => o.Id).ToHashSet();
 
             var baseQuery = _unitOfWork.Coupons.Query()

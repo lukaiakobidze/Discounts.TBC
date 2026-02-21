@@ -4,6 +4,7 @@ using Discounts.Application.DTOs.Categories;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Repositories;
 using Discounts.Domain.Entities;
+using Discounts.Domain.Enums;
 using Mapster;
 using MediatR;
 
@@ -25,7 +26,7 @@ namespace Discounts.Application.Features.Categories.Query.GetCategoryById
                 throw new NotFoundException(nameof(Category), request.Id);
 
             var dto = category.Adapt<CategoryDto>();
-            dto.OfferCount = category.Offers.Count;
+            dto.OfferCount = category.Offers.Count(x => x.Status == OfferStatus.Active);
 
             return dto;
         }

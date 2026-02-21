@@ -19,9 +19,9 @@ namespace Discounts.MVC.Areas.Merchant.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index(Guid? offerId = null)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, Guid? offerId = null)
         {
-            var sales = await _sender.Send(new GetSalesHistoryQuery(offerId)).ConfigureAwait(false);
+            var sales = await _sender.Send(new GetSalesHistoryQuery(offerId), cancellationToken).ConfigureAwait(false);
             return View(sales);
         }
     }

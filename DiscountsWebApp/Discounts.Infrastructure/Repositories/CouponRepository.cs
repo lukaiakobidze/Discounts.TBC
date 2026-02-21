@@ -16,6 +16,12 @@ namespace Discounts.Infrastructure.Repositories
         {
             return _dbSet.FirstOrDefaultAsync(c => c.Code == code, cancellationToken);
         }
+
+        public Task<Coupon?> GetByCustomerAndOfferIdAsync(Guid offerId, string customerId, CancellationToken cancellationToken = default)
+        {
+            return _dbSet.SingleOrDefaultAsync(x => x.OfferId == offerId && x.CustomerId == customerId, cancellationToken);
+        }
+
         public async Task<IReadOnlyList<Coupon>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default)
         {
             return await _dbSet.Where(c => c.CustomerId == customerId).ToListAsync(cancellationToken).ConfigureAwait(false);

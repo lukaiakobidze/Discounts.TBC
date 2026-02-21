@@ -39,9 +39,9 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
             if (_dateTime.UtcNow > offer.ValidTo)
                 throw new ConflictException("This offer has expired.");
 
-            //should add method for getting a coupon by offer id and customer id to avoid loading all coupons of the customer
-            var myCoupons = await _unitOfWork.Coupons.GetByCustomerIdAsync(user!, cancellationToken).ConfigureAwait(false);
-            if (myCoupons.Any(c => c.OfferId == offer.Id))
+            var existingCoupon = await _unitOfWork.Coupons.GetByCustomerAndOfferIdAsync(offer.Id, user!, cancellationToken).ConfigureAwait(false);
+
+            if (existingCoupon != null)
                 throw new ConflictException($"You have already purchased a coupon for the offer: {offer.Name}.");
 
             var coupon = new Coupon
@@ -57,12 +57,18 @@ namespace Discounts.Application.Features.Coupons.Command.PurchaseCoupon
 
             await _unitOfWork.Coupons.AddAsync(coupon, cancellationToken).ConfigureAwait(false);
 
-            var reservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(offer.Id, user!, cancellationToken).ConfigureAwait(false);
-            if (reservation is not null)
+            var reservations = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(offer.Id, user!, cancellationToken).ConfigureAwait(false);
+
+            foreach(var reservation in reservations)
             {
-                offer.RemainingCount += 1;
-                _unitOfWork.Reservations.Delete(reservation);
+                if (!reservation.IsDeleted)
+                {
+                    offer.RemainingCount += 1;
+                    _unitOfWork.Reservations.Delete(reservation);
+                }
+
             }
+
             _unitOfWork.Offers.Update(offer);
 
             try

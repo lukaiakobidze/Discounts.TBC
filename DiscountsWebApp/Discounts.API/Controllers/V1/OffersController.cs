@@ -25,42 +25,42 @@ namespace TBC.WebApi.Controllers.V1
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOffers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetOffers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(new GetOffersQuery(pageNumber, pageSize)).ConfigureAwait(false);
+            var result = await _sender.Send(new GetOffersQuery(pageNumber, pageSize), cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetOffer(Guid id)
+        public async Task<IActionResult> GetOffer(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(new GetOfferByIdQuery(id)).ConfigureAwait(false);
+            var result = await _sender.Send(new GetOfferByIdQuery(id), cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> SearchOffers([FromQuery] string? searchTerm, [FromQuery] Guid? categoryId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> SearchOffers([FromQuery] string? searchTerm, [FromQuery] Guid? categoryId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, CancellationToken cancellationToken, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var result = await _sender.Send(new SearchOffersQuery(searchTerm, categoryId, minPrice, maxPrice, pageNumber, pageSize)).ConfigureAwait(false);
+            var result = await _sender.Send(new SearchOffersQuery(searchTerm, categoryId, minPrice, maxPrice, pageNumber, pageSize), cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpPost]
         [Authorize(Policy = "MerchantOnly")]
-        public async Task<IActionResult> CreateOffer([FromBody] CreateOfferCommand command)
+        public async Task<IActionResult> CreateOffer([FromBody] CreateOfferCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return CreatedAtAction(nameof(GetOffer), new { id = result.Id }, result);
         }
 
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "MerchantOnly")]
-        public async Task<IActionResult> UpdateOffer(Guid id, [FromBody] UpdateOfferCommand command)
+        public async Task<IActionResult> UpdateOffer(Guid id, [FromBody] UpdateOfferCommand command, CancellationToken cancellationToken)
         {
             if (id != command.Id)
                 return BadRequest("ID mismatch.");
 
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
     }

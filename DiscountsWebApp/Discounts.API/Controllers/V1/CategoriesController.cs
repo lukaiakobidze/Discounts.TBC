@@ -25,43 +25,43 @@ namespace Discounts.API.Controllers.V1
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(new GetAllCategoriesQuery()).ConfigureAwait(false);
+            var result = await _sender.Send(new GetAllCategoriesQuery(), cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(new GetCategoryByIdQuery(id)).ConfigureAwait(false);
+            var result = await _sender.Send(new GetCategoryByIdQuery(id), cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
         {
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryCommand command)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
             if (id != command.Id)
                 return BadRequest("ID mismatch.");
 
-            var result = await _sender.Send(command).ConfigureAwait(false);
+            var result = await _sender.Send(command, cancellationToken).ConfigureAwait(false);
             return Ok(result);
         }
 
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new DeleteCategoryCommand(id)).ConfigureAwait(false);
+            await _sender.Send(new DeleteCategoryCommand(id), cancellationToken).ConfigureAwait(false);
             return NoContent();
         }
     }

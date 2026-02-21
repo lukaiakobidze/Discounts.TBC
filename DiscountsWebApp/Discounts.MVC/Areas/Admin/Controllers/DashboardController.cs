@@ -19,9 +19,9 @@ namespace Discounts.MVC.Areas.Admin.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var stats = await _sender.Send(new AdminDashboardQuery()).ConfigureAwait(false);
+            var stats = await _sender.Send(new AdminDashboardQuery(), cancellationToken).ConfigureAwait(false);
             return View(stats);
         }
     }

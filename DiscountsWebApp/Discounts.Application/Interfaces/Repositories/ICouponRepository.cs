@@ -11,5 +11,6 @@ namespace Discounts.Application.Interfaces.Repositories
         Task<IReadOnlyList<Coupon>> GetByStatusAsync(CouponStatus status, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<Coupon>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<Coupon>> GetByOfferIdAsync(Guid offerId, CancellationToken cancellationToken = default);
+        Task<Coupon?> GetByCustomerAndOfferIdAsync(Guid offerId, string customerId, CancellationToken cancellationToken = default);
     }
 }

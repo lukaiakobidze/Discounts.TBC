@@ -12,13 +12,13 @@
             <tr>
                 <td>@user.Email</td>
                 <td>@user.FirstName @user.LastName</td>
-                <td><span class="badge bg-info">@user.Role</span></td>
+                <td><span class="badge badge-category">@user.Role</span></td>
                 <td>@(user.IsBlocked ? "Blocked" : "Active")</td>
                 <td>
                     @if (user.IsBlocked)
                     {
                         <form asp-action="Unblock" asp-route-id="@user.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-success">Unblock</button>
+                            <button class="btn btn-sm btn-highlight">Unblock</button>
                         </form>
                     }
                     else

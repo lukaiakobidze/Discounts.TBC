@@ -13,7 +13,7 @@
         <tr>
             <td><code>@c.Code</code></td>
             <td>@c.OfferName</td>
-            <td><span class="badge @(c.Status == Discounts.Domain.Enums.CouponStatus.Active ? "bg-success" : "bg-secondary")">@c.Status</span></td>
+                    <td><span class="badge @(c.Status == Discounts.Domain.Enums.CouponStatus.Active ? "badge-primary" : "badge-category")">@c.Status</span></td>
             <td>@c.PurchaseDate.ToString("MMM dd, yyyy")</td>
         </tr>
     }

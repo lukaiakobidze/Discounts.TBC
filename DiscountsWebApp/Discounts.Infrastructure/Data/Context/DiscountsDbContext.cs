@@ -2,6 +2,7 @@
 
 using Discounts.Domain.Entities;
 using Discounts.Infrastructure.Identity;
+using Discounts.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,11 @@ namespace Discounts.Data.Context
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(DiscountsDbContext).Assembly);
+        }
+        protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+        {
+            builder.Properties<DateTime>()
+                .HaveConversion<UtcDateTimeConverter>();
         }
     }
 }

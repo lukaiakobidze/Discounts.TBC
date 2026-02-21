@@ -19,9 +19,9 @@ namespace Discounts.Infrastructure.Repositories
         {
             return await _dbSet.Where(r => r.OfferId == offerId).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
-        public Task<Reservation?> GetByOfferIdAndCustomerId(Guid offerId, string customerId, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Reservation>> GetByOfferIdAndCustomerId(Guid offerId, string customerId, CancellationToken cancellationToken = default)
         {
-            return _dbSet.IgnoreQueryFilters().FirstOrDefaultAsync(r => r.OfferId == offerId && r.CustomerId == customerId, cancellationToken);
+            return await _dbSet.IgnoreQueryFilters().Where(r => r.OfferId == offerId && r.CustomerId == customerId).ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         public async Task<IReadOnlyList<Reservation>> GetExpiredAsync(DateTime expireThreshold, CancellationToken cancellationToken = default)
         {

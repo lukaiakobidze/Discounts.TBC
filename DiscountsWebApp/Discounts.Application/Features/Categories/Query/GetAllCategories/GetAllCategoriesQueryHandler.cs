@@ -2,6 +2,7 @@
 
 using Discounts.Application.DTOs.Categories;
 using Discounts.Application.Interfaces.Repositories;
+using Discounts.Domain.Enums;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace Discounts.Application.Features.Categories.Query.GetAllCategories
             var dtos = categories.Select(x =>
             {
                 var dto = x.Adapt<CategoryDto>();
-                dto.OfferCount = x.Offers.Count;
+                dto.OfferCount = x.Offers.Count(x => x.Status == OfferStatus.Active);
                 return dto;
             }).ToList();
 

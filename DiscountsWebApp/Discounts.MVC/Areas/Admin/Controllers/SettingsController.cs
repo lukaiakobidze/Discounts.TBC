@@ -2,6 +2,7 @@
 
 using Discounts.Application.DTOs.Admin;
 using Discounts.Application.Features.Admin.Command.UpdateGlobalSettings;
+using Discounts.Application.Features.Admin.Query.GetGlobalSettings;
 using Discounts.Application.Interfaces.Repositories;
 using Discounts.Domain.Constants;
 using MediatR;
@@ -23,26 +24,19 @@ namespace Discounts.MVC.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var settings = await _unitOfWork.GlobalSettings.GetAllAsync().ConfigureAwait(false);
-            var dtos = settings.Select(s => new GlobalSettingDto { Id = s.Id, Key = s.Key, Value = s.Value }).ToList();
-
-            if (!dtos.Any(d => d.Key == GlobalSettingConstants.ReservationDurationMinutes))
-                dtos.Add(new GlobalSettingDto { Key = GlobalSettingConstants.ReservationDurationMinutes, Value = "30" });
-            if (!dtos.Any(d => d.Key == GlobalSettingConstants.MerchantEditWindowHours))
-                dtos.Add(new GlobalSettingDto { Key = GlobalSettingConstants.MerchantEditWindowHours, Value = "24" });
-
-            return View((IReadOnlyList<GlobalSettingDto>)dtos);
+            var dtos = await _sender.Send(new GetGlobalSettingsQuery(), cancellationToken).ConfigureAwait(false);
+            return View(dtos);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Dictionary<string, string> settings)
+        public async Task<IActionResult> Update(Dictionary<string, string> settings, CancellationToken cancellationToken)
         {
             foreach (var (key, value) in settings)
             {
-                await _sender.Send(new UpdateGlobalSettingsCommand(key, value)).ConfigureAwait(false);
+                await _sender.Send(new UpdateGlobalSettingsCommand(key, value), cancellationToken).ConfigureAwait(false);
             }
 
             TempData["Success"] = "Settings updated.";

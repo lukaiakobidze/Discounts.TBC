@@ -33,8 +33,8 @@ namespace Discounts.Application.Features.Reservations.Command.CreateReservation
 
             var existingReservation = await _unitOfWork.Reservations.GetByOfferIdAndCustomerId(request.OfferId, _currentUserService.UserId!, cancellationToken).ConfigureAwait(false);
 
-            if (existingReservation != null)
-                throw new ConflictException("You can only make a reservation once for an offer.");
+            if (existingReservation.Count > 2)
+                throw new ConflictException("You can only make a reservation three times for an offer.");
 
             if (offer.RemainingCount < 1)
                 throw new ConflictException("No remaining coupons to reserve");
@@ -45,7 +45,7 @@ namespace Discounts.Application.Features.Reservations.Command.CreateReservation
             {
                 Id = Guid.NewGuid(),
                 OfferId = request.OfferId,
-                CustomerId = _currentUserService.UserId,
+                CustomerId = _currentUserService.UserId!,
                 ExpirationDate = _dateTimeProvider.UtcNow.AddMinutes(duration),
             };
 

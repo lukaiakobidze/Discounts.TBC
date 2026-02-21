@@ -16,10 +16,10 @@ namespace Discounts.MVC.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var offers = await _sender.Send(new SearchOffersQuery(PageNumber: 1, PageSize: 6)).ConfigureAwait(false);
-            var categories = await _sender.Send(new GetAllCategoriesQuery()).ConfigureAwait(false);
+            var offers = await _sender.Send(new SearchOffersQuery(PageNumber: 1, PageSize: 6), cancellationToken).ConfigureAwait(false);
+            var categories = await _sender.Send(new GetAllCategoriesQuery(), cancellationToken).ConfigureAwait(false);
             ViewBag.Categories = categories;
             return View(offers.Items);
         }

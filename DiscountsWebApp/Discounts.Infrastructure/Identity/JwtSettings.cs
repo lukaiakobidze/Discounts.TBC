@@ -9,5 +9,6 @@ namespace Discounts.Infrastructure.Identity
         public string Audience { get; set; } = default!;
         public int AccessTokenExpirationHours { get; set; }
         public int RefreshTokenbExpirationHours { get; set; }
+        public int CookieExpirationHours { get; set; }
     }
 }

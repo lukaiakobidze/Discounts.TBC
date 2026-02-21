@@ -31,7 +31,7 @@ namespace Discounts.Application.Features.Offers.Query.GetOfferById
             var dto = offer.Adapt<OfferDto>();
 
             dto.CategoryName = category?.Name ?? string.Empty;
-
+            Console.WriteLine($"ValidFrom Kind: {offer.ValidFrom.Kind}");
             return dto;
         }
     }

@@ -7,9 +7,19 @@
 <div class="row">
     <div class="col-md-8">
         <div class="card">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <img src="@Model.ImagePath" class="card-img-top" alt="@Model.Name" style="height: 180px; object-fit: cover;" />
+            }
+            else
+            {
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                    <i class="fas fa-tag fa-2x text-muted"></i>
+                </div>
+            }
             <div class="card-body p-4">
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="badge bg-secondary">@Model.CategoryName</span>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge badge-category">@Model.CategoryName</span>
                     <span class="badge badge-discount">-@Model.DiscountPercentage%</span>
                 </div>
                 <h2>@Model.Name</h2>
@@ -18,11 +28,11 @@
                 <div class="row">
                     <div class="col-6">
                         <small class="text-muted">Valid From</small>
-                        <p>@Model.ValidFrom.ToString("MMM dd, yyyy")</p>
+                        <p id="validFrom" data-utc="@(Model.ValidFrom.ToString("yyyy-MM-ddTHH:mm:ss") + "Z")"></p>
                     </div>
                     <div class="col-6">
-                        <small class="text-muted">Valid Until</small>
-                        <p>@Model.ValidTo.ToString("MMM dd, yyyy")</p>
+                        <small class="text-muted">Valid Until</small>   
+                        <p id="validTo" data-utc="@(Model.ValidTo.ToString("yyyy-MM-ddTHH:mm:ss") + "Z")"></p>
                     </div>
                 </div>
             </div>
@@ -45,7 +55,7 @@
                 {
                     @if ((bool)ViewBag.IsPurchased)
                     {
-                        <button class="btn btn-success w-100 mb-2" disabled>
+                        <button class="btn btn-highlight w-100 mb-2" disabled>
                             <i class="fas fa-check-circle me-1"></i>Already Purchased
                         </button>
                     }
@@ -65,7 +75,7 @@
                     {
                         <form asp-controller="Customer" asp-action="Reserve" method="post" class="mb-2">
                             <input type="hidden" name="offerId" value="@Model.Id" />
-                            <button type="submit" class="btn btn-outline-primary w-100 mb-2">
+                            <button type="submit" class="btn btn-notice w-100 mb-2">
                                 <i class="fas fa-bookmark me-1"></i>Reserve
                             </button>
                         </form>
@@ -81,3 +91,18 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            ['validFrom', 'validTo'].forEach(id => {
+                const el = document.getElementById(id);
+                const date = new Date(el.dataset.utc);
+                el.textContent = date.toLocaleString('en-US', {
+                    hour: '2-digit', minute: '2-digit',
+                    month: 'short', day: '2-digit', year: 'numeric'
+                });
+            });
+        });
+    </script>
+}

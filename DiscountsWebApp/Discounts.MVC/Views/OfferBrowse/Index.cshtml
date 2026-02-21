@@ -46,9 +46,19 @@
         {
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(offer.ImagePath))
+                    {
+                        <img src="@offer.ImagePath" class="card-img-top" alt="@offer.Name" style="height: 180px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="fas fa-tag fa-2x text-muted"></i>
+                        </div>
+                    }
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="badge bg-secondary">@offer.CategoryName</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">@offer.CategoryName</span>
                             @if (offer.IsSoldOut)
                             {
                                 <span class="badge bg-dark">Sold Out</span>
@@ -69,7 +79,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted">@offer.RemainingCount left</small>
-                            <a asp-action="Details" asp-route-id="@offer.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                            <a asp-action="Details" asp-route-id="@offer.Id" class="btn btn-sm btn-highlight">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -81,12 +91,24 @@
     {
         <nav>
             <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" href="?pageNumber=@(Model.PageNumber - 1)&searchTerm=@Context.Request.Query["searchTerm"]&categoryId=@Context.Request.Query["categoryId"]&minPrice=@Context.Request.Query["minPrice"]&maxPrice=@Context.Request.Query["maxPrice"]">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
                     <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="?pageNumber=@i&searchTerm=@Context.Request.Query["searchTerm"]&categoryId=@Context.Request.Query["categoryId"]">@i</a>
+                        <a class="page-link" href="?pageNumber=@i&searchTerm=@Context.Request.Query["searchTerm"]&categoryId=@Context.Request.Query["categoryId"]&minPrice=@Context.Request.Query["minPrice"]&maxPrice=@Context.Request.Query["maxPrice"]">@i</a>
                     </li>
                 }
+
+                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="?pageNumber=@(Model.PageNumber + 1)&searchTerm=@Context.Request.Query["searchTerm"]&categoryId=@Context.Request.Query["categoryId"]&minPrice=@Context.Request.Query["minPrice"]&maxPrice=@Context.Request.Query["maxPrice"]">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
             </ul>
         </nav>
     }

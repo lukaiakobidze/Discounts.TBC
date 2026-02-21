@@ -38,15 +38,46 @@
     <div class="row">
         <div class="col-md-4 mb-3">
             <label asp-for="ValidFrom" class="form-label"></label>
-            <input asp-for="ValidFrom" class="form-control" type="date" />
+            <input asp-for="ValidFrom" class="form-control" type="datetime-local" />
         </div>
         <div class="col-md-4 mb-3">
             <label asp-for="ValidTo" class="form-label"></label>
-            <input asp-for="ValidTo" class="form-control" type="date" />
+            <input asp-for="ValidTo" class="form-control" type="datetime-local" />
         </div>
     </div>
+    <input type="hidden" name="TimezoneOffset" id="timezoneOffset" />
+
+    <div class="mb-3">
+        <label asp-for="ImageFile" class="form-label">Image</label>
+        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+    </div>
+
+            
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" alt="Current image" style="max-height: 150px;" />
+        <p class="text-muted small">Upload a new image to replace it.</p>
+    }
+
     <button type="submit" class="btn btn-highlight">Save Changes</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 </div></div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('timezoneOffset').value = new Date().getTimezoneOffset();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const offset = new Date().getTimezoneOffset();
+            const inputs = document.querySelectorAll('input[type="datetime-local"]');
+            inputs.forEach(input => {
+                if (input.value) {
+                    const utcDate = new Date(input.value + 'Z');
+                    const local = new Date(utcDate.getTime() - offset * 60000);
+                    input.value = local.toISOString().slice(0, 16);
+                }
+            });
+        });
+    </script>
+}

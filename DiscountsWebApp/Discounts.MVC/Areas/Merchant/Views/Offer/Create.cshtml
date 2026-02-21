@@ -4,7 +4,7 @@
 }
 <h2 class="mb-4">Create Offer</h2>
 <div class="card"><div class="card-body">
-<form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-8 mb-3">
             <label asp-for="Name" class="form-label"></label>
@@ -44,15 +44,28 @@
     <div class="row">
         <div class="col-md-4 mb-3">
             <label asp-for="ValidFrom" class="form-label"></label>
-            <input asp-for="ValidFrom" class="form-control" type="date" />
+            <input asp-for="ValidFrom" class="form-control" type="datetime-local" />
         </div>
         <div class="col-md-4 mb-3">
             <label asp-for="ValidTo" class="form-label"></label>
-            <input asp-for="ValidTo" class="form-control" type="date" />
+            <input asp-for="ValidTo" class="form-control" type="datetime-local" />
         </div>
     </div>
+    <input type="hidden" name="TimezoneOffset" id="timezoneOffset" />
+
+    <div class="mb-3">
+        <label asp-for="ImageFile" class="form-label">Image</label>
+        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+    </div>
+
+
     <button type="submit" class="btn btn-highlight">Create Offer</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 </div></div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('timezoneOffset').value = new Date().getTimezoneOffset();
+    </script>
+}

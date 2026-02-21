@@ -4,13 +4,60 @@
     var categories = ViewBag.Categories as IReadOnlyList<Discounts.Application.DTOs.Categories.CategoryDto>;
 }
 
-<div class="text-center py-5 mb-4" style="background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 16px; color: white;">
+<div class="text-center py-5 mb-4" style="background: none; border-radius: 16px; color: var(--primary);">
     <h1 class="display-4 fw-bold">Discover Amazing Deals</h1>
     <p class="lead mb-4">Find the best discounts and save big on your favorite products</p>
     <a asp-controller="OfferBrowse" asp-action="Index" class="btn btn-highlight btn-lg px-5">
         <i class="fas fa-search me-2"></i>Browse All Offers
     </a>
 </div>
+
+@if (Model != null && Model.Any())
+{
+    <h3 class="mb-3">Recent Offers</h3>
+    <div class="row">
+        @foreach (var offer in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(offer.ImagePath))
+                    {
+                        <img src="@offer.ImagePath" class="card-img-top" alt="@offer.Name" style="height: 180px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                            <i class="fas fa-tag fa-2x text-muted"></i>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">@offer.CategoryName</span>
+                            @if (offer.IsSoldOut)
+                            {
+                                <span class="badge bg-dark">Sold Out</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-discount">-@offer.DiscountPercentage%</span>
+                            }
+                        </div>
+                        <h5 class="card-title">@offer.Name</h5>
+                        @if (offer.Description != null)
+                        {
+                            <p class="card-text text-muted small">@(offer.Description.Length > 100 ? offer.Description[..100] + "..." : offer.Description)</p>
+                        }
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="text-decoration-line-through text-muted">$@offer.OriginalPrice.ToString("F2")</span>
+                            <span class="h5 text-danger mb-0">$@offer.DiscountedPrice.ToString("F2")</span>
+                        </div>
+                        <a asp-controller="OfferBrowse" asp-action="Details" asp-route-id="@offer.Id" class="btn btn-highlight w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @if (categories != null && categories.Any())
 {
@@ -31,39 +78,4 @@
     </div>
 }
 
-@if (Model != null && Model.Any())
-{
-    <h3 class="mb-3">Recent Offers</h3>
-    <div class="row">
-        @foreach (var offer in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="badge bg-secondary">@offer.CategoryName</span>
-                            @if (offer.IsSoldOut)
-                            {
-                                <span class="badge bg-dark">Sold Out</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-discount">-@offer.DiscountPercentage%</span>
-                            }
-                        </div>
-                        <h5 class="card-title">@offer.Name</h5>
-                        @if(offer.Description != null)
-                        {
-                            <p class="card-text text-muted small">@(offer.Description.Length > 100 ? offer.Description[..100] + "..." : offer.Description)</p>
-                        }
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <span class="text-decoration-line-through text-muted">$@offer.OriginalPrice.ToString("F2")</span>
-                            <span class="h5 text-danger mb-0">$@offer.DiscountedPrice.ToString("F2")</span>
-                        </div>
-                        <a asp-controller="OfferBrowse" asp-action="Details" asp-route-id="@offer.Id" class="btn btn-outline-primary w-100">View Details</a>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
+

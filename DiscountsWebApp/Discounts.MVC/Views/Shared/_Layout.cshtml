@@ -8,16 +8,87 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
     <style>
-        :root { --primary: #1a1a2e; --secondary: #16213e; --accent: #0f3460; --highlight: #e94560; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f6fa; }
-        .navbar { background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; }
-        .navbar-brand { font-weight: 700; letter-spacing: 1px; }
-        .btn-highlight { background: var(--highlight); color: white; border: none; }
-        .btn-highlight:hover { background: #d63851; color: white; }
-        .card { border: none; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border-radius: 12px; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-4px); }
-        .badge-discount { background: var(--highlight); font-size: 0.9rem; }
-        footer { background: var(--primary); color: #ccc; padding: 2rem 0; margin-top: 4rem; }
+        :root {
+            --primary: #39635a;
+            --secondary: #2f614d;
+            --accent: #91bfac;
+            --highlight: #739c8b;
+            --warning: #d18498;
+            --darkWarning: #b55b67;
+            --notice: #84a5d1;
+            --darkNotice: #6f95c7;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background: var(--primary) !important;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .btn-highlight {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+        .btn-highlight:hover {
+            background: var(--highlight);
+            color: white;
+        }
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+            border: none;
+        }
+        .btn-warning:hover {
+            background: var(--darkWarning);
+            color: white;
+            
+        }
+        .btn-notice {
+            background: var(--notice);
+            color: white;
+            border: none;
+        }
+        .btn-notice:hover {
+            background: var(--darkNotice);
+            color: white;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            border-radius: 12px; }
+        .badge-discount {
+            background: var(--highlight);
+            font-size: 0.9rem;
+        }
+        .badge-category {
+            background: var(--notice) !important;
+            color: white !important;
+        }
+        .badge-primary {
+            background: var(--highlight) !important;
+            color: white !important;
+        }
+        footer {
+            background: var(--primary);
+            color: #ccc;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+        .navbar .nav-link {
+            color: white !important;
+            opacity: 0.85;
+        }
+        .navbar .nav-link:hover {
+            opacity: 1;
+        }
     </style>
     @RenderSection("Styles", required: false)
 </head>
@@ -33,10 +104,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" style="color:white;">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="OfferBrowse" asp-action="Index">Browse Offers</a>
+                        <a class="nav-link" asp-area="" asp-controller="OfferBrowse" asp-action="Index" style="color:white;">Browse Offers</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -65,6 +136,11 @@
                                     <i class="fas fa-ticket-alt me-1"></i>My Coupons
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Customer" asp-action="MyReservations">
+                                    <i class="fas fa-ticket-alt me-1"></i>My Reservations
+                                </a>
+                            </li>
                         }
                         <li class="nav-item">
                             <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
@@ -80,7 +156,7 @@
                             <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-highlight btn-sm ms-2 px-3" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
                         </li>
                     }
                 </ul>
@@ -88,7 +164,7 @@
         </div>
     </nav>
 
-    <main class="container mt-4">
+    <main class="container mt-4" style="flex: 1">
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show">
@@ -108,7 +184,7 @@
 
     <footer>
         <div class="container text-center">
-            <p>&copy; @DateTime.Now.Year TBC Discounts - IT Academy Project</p>
+            <p>&copy; @DateTime.Now.Year TBC Discounts - IT Academy Project by Luka Iakobidze</p>
         </div>
     </footer>
 

@@ -1,3 +1,5 @@
+// Copyright (C) TBC Bank. All Rights Reserved.
+
 using System.Globalization;
 using Discounts.Application;
 using Discounts.Data.Context;
@@ -44,6 +46,8 @@ namespace Discounts.MVC
                     await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
                     await RoleSeed.SeedRolesAsync(scope.ServiceProvider).ConfigureAwait(false);
                     await AdminSeed.SeedAdminAsync(scope.ServiceProvider).ConfigureAwait(false);
+                    await CategorySeed.SeedCategoriesAsync(scope.ServiceProvider).ConfigureAwait(false);
+                    await GlobalSettingsSeed.SeedGlobalSettingsAsync(scope.ServiceProvider).ConfigureAwait(false);
                 }
 
                 if (!app.Environment.IsDevelopment())

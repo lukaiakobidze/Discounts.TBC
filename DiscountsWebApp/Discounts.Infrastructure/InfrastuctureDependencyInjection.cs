@@ -3,6 +3,7 @@
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Discounts.Data.Context;
+using Discounts.Infrastructure.BackgroundServices;
 using Discounts.Infrastructure.Data.Interceptors;
 using Discounts.Infrastructure.HealthCheck;
 using Discounts.Infrastructure.Identity;
@@ -51,6 +52,9 @@ namespace Discounts.Infrastructure
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IGlobalSettingRepository, GlobalSettingRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddHostedService<OfferExpirationWorker>();
+            services.AddHostedService<ReservationCleanupWorker>();
 
             services.AddHealthChecks()
                 .AddCheck<DatabaseHealthCheck>("database");

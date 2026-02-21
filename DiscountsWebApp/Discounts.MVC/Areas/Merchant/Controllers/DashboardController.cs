@@ -19,9 +19,9 @@ namespace Discounts.MVC.Areas.Merchant.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var dashboard = await _sender.Send(new MerchantDashboardQuery()).ConfigureAwait(false);
+            var dashboard = await _sender.Send(new MerchantDashboardQuery(), cancellationToken).ConfigureAwait(false);
             return View(dashboard);
         }
     }

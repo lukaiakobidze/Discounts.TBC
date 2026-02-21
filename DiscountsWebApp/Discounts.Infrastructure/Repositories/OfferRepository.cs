@@ -16,7 +16,7 @@ namespace Discounts.Infrastructure.Repositories
         {
             return await _dbSet.Where(o => o.CategoryId == categoryId).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
-        public async Task<IReadOnlyList<Offer>> GetByMerchantId(string merchantId, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Offer>> GetByMerchantIdAsync(string merchantId, CancellationToken cancellationToken = default)
         {
             return await _dbSet.Where(o => o.MerchantId == merchantId).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -24,7 +24,7 @@ namespace Discounts.Infrastructure.Repositories
         {
             return await _dbSet.Where(o => o.Status == status).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
-        public async Task<IReadOnlyList<Offer>> GetExpiredOffers(DateTime now, CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Offer>> GetExpiredOffersAsync(DateTime now, CancellationToken cancellationToken = default)
         {
             return await _dbSet.Where(o => o.ValidTo < now).ToListAsync(cancellationToken).ConfigureAwait(false);
         }

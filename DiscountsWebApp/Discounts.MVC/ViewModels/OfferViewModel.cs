@@ -15,6 +15,7 @@ namespace Discounts.MVC.ViewModels
         public string? Description { get; set; } = string.Empty;
 
         public string? ImagePath { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [Required]
         [Range(0.01, double.MaxValue)]
@@ -42,5 +43,7 @@ namespace Discounts.MVC.ViewModels
         [Required]
         [Display(Name = "Category")]
         public Guid CategoryId { get; set; }
+
+        public int TimezoneOffset { get; set; }
     }
 }

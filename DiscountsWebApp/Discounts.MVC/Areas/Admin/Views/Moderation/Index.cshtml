@@ -19,10 +19,10 @@
                     <td>@offer.CreatedAt.ToString("MMM dd")</td>
                     <td>
                         <form asp-action="Approve" asp-route-id="@offer.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-sm btn-highlight"><i class="fas fa-check"></i></button>
                         </form>
                         <form asp-action="Reject" asp-route-id="@offer.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                            <button class="btn btn-sm btn-warning"><i class="fas fa-times"></i></button>
                         </form>
                     </td>
                 </tr>
