@@ -58,6 +58,8 @@ publish/
 DiscountsWebApp/Discounts.API/Logs/
 DiscountsWebApp/Discounts.MVC/Logs/
 
+DiscountsWebApp/Discounts.MVC/wwwroot/
+
 # OS files
 .DS_Store
 Thumbs.db

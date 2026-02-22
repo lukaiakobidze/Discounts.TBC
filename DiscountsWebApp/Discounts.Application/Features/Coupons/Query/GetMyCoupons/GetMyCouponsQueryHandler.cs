@@ -1,7 +1,6 @@
 ﻿// Copyright (C) TBC Bank. All Rights Reserved.
 
 using Discounts.Application.DTOs.Coupons;
-using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Mapster;
@@ -29,7 +28,7 @@ namespace Discounts.Application.Features.Coupons.Query.GetMyCoupons
                 var dto = x.Adapt<CouponDto>();
                 dto.OfferName = x.Offer.Name;
                 return dto;
-            }).ToList();
+            }).OrderByDescending(x => x.PurchaseDate).ToList();
 
             return dtos;
         }

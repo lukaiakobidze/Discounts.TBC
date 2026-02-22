@@ -2,9 +2,7 @@
 @{
     ViewData["Title"] = "My Coupons";
 }
-
 <h2 class="mb-4"><i class="fas fa-ticket-alt me-2"></i>My Coupons</h2>
-
 @if (Model != null && Model.Any())
 {
     <div class="row">
@@ -15,19 +13,24 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <h5>@coupon.OfferName</h5>
-                            <span class="badge @(coupon.Status == Discounts.Domain.Enums.CouponStatus.Active ? "badge-primary" : coupon.Status == Discounts.Domain.Enums.CouponStatus.Used ? "badge-category" : "badge-discount")">
+                            <span class="badge align-self-center @(coupon.Status == Discounts.Domain.Enums.CouponStatus.Active ? "badge-primary" : coupon.Status == Discounts.Domain.Enums.CouponStatus.Used ? "badge-category" : "badge-discount") ">
                                 @coupon.Status
                             </span>
                         </div>
                         <p class="mb-1"><strong>Code:</strong> <code>@coupon.Code</code></p>
                         <p class="text-muted small mb-2">Purchased: @coupon.PurchaseDate.ToString("MMM dd, yyyy")</p>
-                        @if (coupon.Status == Discounts.Domain.Enums.CouponStatus.Active)
-                        {
-                            <form asp-action="UseCoupon" method="post">
-                                <input type="hidden" name="uniqueCode" value="@coupon.Code" />
-                                <button type="submit" class="btn btn-sm btn-highlight">Mark as Used</button>
-                            </form>
-                        }
+                        <div class="d-flex gap-2">
+                            <a asp-controller="OfferBrowse" asp-action="Details" asp-route-id="@coupon.OfferId" class="btn btn-sm btn-highlight">
+                                <i class="fas fa-eye me-1"></i>View Offer
+                            </a>
+                            @if (coupon.Status == Discounts.Domain.Enums.CouponStatus.Active)
+                            {
+                                <form asp-action="UseCoupon" method="post">
+                                    <input type="hidden" name="uniqueCode" value="@coupon.Code" />
+                                    <button type="submit" class="btn btn-sm btn-notice">Mark as Used</button>
+                                </form>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

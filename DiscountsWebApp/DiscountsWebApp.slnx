@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="Discounts.API/Discounts.API.csproj" />
+    <Project Path="Discounts.Application.Tests/Discounts.Application.Tests.csproj" Id="66441152-b5dd-44c0-87c1-36b60871f508" />
     <Project Path="Discounts.Application/Discounts.Application.csproj" />
     <Project Path="Discounts.Domain/Discounts.Domain.csproj" />
     <Project Path="Discounts.Infrastructure/Discounts.Infrastructure.csproj" />

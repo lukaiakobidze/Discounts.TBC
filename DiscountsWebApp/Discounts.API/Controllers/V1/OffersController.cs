@@ -25,7 +25,7 @@ namespace TBC.WebApi.Controllers.V1
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOffers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetOffers(CancellationToken cancellationToken, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var result = await _sender.Send(new GetOffersQuery(pageNumber, pageSize), cancellationToken).ConfigureAwait(false);
             return Ok(result);

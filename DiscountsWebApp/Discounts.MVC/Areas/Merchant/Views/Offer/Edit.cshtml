@@ -4,8 +4,9 @@
 }
 <h2 class="mb-4">Edit Offer</h2>
 <div class="card"><div class="card-body">
-<form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImagePath" />
     <div class="row">
         <div class="col-md-8 mb-3">
             <label asp-for="Name" class="form-label"></label>

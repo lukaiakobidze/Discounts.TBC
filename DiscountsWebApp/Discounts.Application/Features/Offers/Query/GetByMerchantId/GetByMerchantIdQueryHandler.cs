@@ -22,7 +22,7 @@ namespace Discounts.Application.Features.Offers.Query.GetByMerchantId
                 var dto = x.Adapt<OfferDto>();
                 dto.CategoryName = x.Category.Name;
                 return dto;
-            }).ToList();
+            }).OrderByDescending(x => x.CreatedAt).ToList();
 
             return dtos;
         }

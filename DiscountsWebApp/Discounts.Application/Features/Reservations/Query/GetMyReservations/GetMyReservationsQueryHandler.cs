@@ -28,7 +28,7 @@ namespace Discounts.Application.Features.Reservations.Query.GetMyReservations
                 dto.OfferName = x.Offer.Name;
                 dto.OfferDiscountedPrice = x.Offer.DiscountedPrice;
                 return dto;
-            }).ToList();
+            }).OrderByDescending(x => x.CreatedAt).ToList();
 
             return dtos;
         }
