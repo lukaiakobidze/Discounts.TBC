@@ -28,8 +28,4 @@
     <ProjectReference Include="..\Discounts.Domain\Discounts.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Factory\" />
-  </ItemGroup>
-
 </Project>

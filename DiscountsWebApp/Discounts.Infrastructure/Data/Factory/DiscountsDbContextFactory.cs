@@ -4,7 +4,7 @@ using Discounts.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Discounts.Infrastructure.Data.Context
+namespace Discounts.Infrastructure.Data.Factory
 {
     public class DiscountsDbContextFactory : IDesignTimeDbContextFactory<DiscountsDbContext>
     {

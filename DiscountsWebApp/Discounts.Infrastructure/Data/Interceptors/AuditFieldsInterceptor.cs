@@ -20,7 +20,6 @@ namespace Discounts.Infrastructure.Data.Interceptors
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        // method runs before saving changes to the database and updates all the createdat and updatedat fields
         private static void UpdateAuditFields(DbContext? context)
         {
             if (context == null) return;
