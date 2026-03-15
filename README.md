@@ -214,6 +214,24 @@ Full interactive documentation is available via Swagger at `/swagger` when the A
 
 > **Important:** Replace `SecretKey` with a strong, random secret before deploying.
 
+The secret key is resolved in this priority order:
+1. Environment variable `JwtSettings__SecretKey`
+2. `appsettings.json` value
+3. Built-in default (development only)
+
+Override via environment variable (recommended for production):
+
+```bash
+# Linux / macOS
+export JwtSettings__SecretKey="your-strong-secret-here"
+
+# Windows (Command Prompt)
+set JwtSettings__SecretKey=your-strong-secret-here
+
+# Windows (PowerShell)
+$env:JwtSettings__SecretKey="your-strong-secret-here"
+```
+
 ---
 
 ## Background Services

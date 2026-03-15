@@ -46,6 +46,12 @@ namespace Discounts.Infrastructure
                 .AddDefaultTokenProviders();
 
             services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
+            services.PostConfigure<JwtSettings>(settings =>
+            {
+                var envSecret = Environment.GetEnvironmentVariable("JwtSettings__SecretKey");
+                if (envSecret is not null)
+                    settings.SecretKey = envSecret;
+            });
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
