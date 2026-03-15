@@ -3,6 +3,7 @@
 using Discounts.Application.Features.Admin.Command.BlockUser;
 using Discounts.Application.Features.Admin.Command.UnblockUser;
 using Discounts.Application.Features.Admin.Query.GetUsers;
+using Discounts.Application.Models;
 using Discounts.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,10 +22,14 @@ namespace Discounts.MVC.Areas.Admin.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, string? role = null)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, string? role = null, int pageNumber = 1)
         {
-            var users = await _sender.Send(new GetUsersQuery(role), cancellationToken).ConfigureAwait(false);
-            return View(users);
+            const int pageSize = 15;
+            var all = await _sender.Send(new GetUsersQuery(role), cancellationToken).ConfigureAwait(false);
+            var paged = new PaginatedList<Discounts.Application.DTOs.Auth.UserDto>(
+                all.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                all.Count, pageNumber, pageSize);
+            return View(paged);
         }
 
         [HttpPost]

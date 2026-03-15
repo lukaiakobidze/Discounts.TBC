@@ -19,6 +19,8 @@ namespace Discounts.Application.DTOs.Offers
         public string MerchantId { get; set; } = string.Empty;
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
+        public int FavouriteCount { get; set; }
+        public string? RejectionReason { get; set; }
         public int DiscountPercentage => OriginalPrice > 0 ? (int)((OriginalPrice - DiscountedPrice) / OriginalPrice * 100) : 0;
         public bool IsSoldOut => RemainingCount <= 0;
     }

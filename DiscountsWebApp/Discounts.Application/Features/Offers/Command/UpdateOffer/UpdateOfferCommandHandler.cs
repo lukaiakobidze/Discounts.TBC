@@ -1,5 +1,6 @@
 // Copyright (C) TBC Bank. All Rights Reserved.
 
+using Discounts.Application.Constants;
 using Discounts.Application.DTOs.Offers;
 using Discounts.Application.Exceptions;
 using Discounts.Application.Interfaces.Auth;
@@ -8,6 +9,7 @@ using Discounts.Domain.Constants;
 using Discounts.Domain.Entities;
 using Mapster;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Discounts.Application.Features.Offers.Command.UpdateOffer
 {
@@ -16,12 +18,14 @@ namespace Discounts.Application.Features.Offers.Command.UpdateOffer
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
         private readonly IDateTimeProvider _dateTime;
+        private readonly IMemoryCache _cache;
 
-        public UpdateOfferCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, IDateTimeProvider dateTime)
+        public UpdateOfferCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, IDateTimeProvider dateTime, IMemoryCache cache)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
             _dateTime = dateTime;
+            _cache = cache;
         }
 
         public async Task<OfferDto> Handle(UpdateOfferCommand request, CancellationToken cancellationToken)
@@ -52,6 +56,9 @@ namespace Discounts.Application.Features.Offers.Command.UpdateOffer
 
             _unitOfWork.Offers.Update(offer);
             await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            _cache.Remove($"{CacheKeys.OfferById}{request.Id}");
+            _cache.Remove($"{CacheKeys.MerchantOffers}{_currentUser.UserId}");
 
             var dto = offer.Adapt<OfferDto>();
             dto.CategoryName = category.Name;

@@ -1,24 +1,97 @@
-@model IReadOnlyList<Discounts.Application.DTOs.Offers.OfferDto>
+@model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Offers.OfferDto>
 @{
     ViewData["Title"] = "My Offers";
+    ViewData["PageNumber"] = Model.PageNumber;
+    ViewData["TotalPages"] = Model.TotalPages;
 }
 <div class="d-flex justify-content-between mb-4">
     <h2>My Offers</h2>
     <a asp-action="Create" class="btn btn-highlight align-self-center" style="padding: 6px 12px;"><i class="fas fa-plus me-1"></i>New Offer</a>
 </div>
-<table class="table table-hover">
-    <thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Qty</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody>
-    @foreach (var o in Model)
+<table class="table table-hover" style="table-layout:fixed;">
+    <colgroup>
+        <col style="width:22%;" />
+        <col style="width:12%;" />
+        <col style="width:9%;" />
+        <col style="width:9%;" />
+        <col style="width:7%;" />
+        <col style="width:9%;" />
+        <col style="width:10%;" />
+        <col style="width:13%;" />
+    </colgroup>
+    <thead><tr><th>Title</th><th>Category</th><th>Price</th><th>Profit</th><th>Sold</th><th>Favourites</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody class="align-middle">
+    @foreach (var o in Model.Items)
     {
-        <tr>
-            <td>@o.Name</td>
-            <td>@o.CategoryName</td>
+        <tr style="height:52px;">
+            <td class="text-truncate" title="@o.Name">@o.Name</td>
+            <td class="text-truncate" title="@o.CategoryName">@o.CategoryName</td>
             <td>$@o.DiscountedPrice.ToString("F2")</td>
-            <td>@o.RemainingCount / @o.TotalCount</td>
-                <td><span class="badge @(o.Status == Discounts.Domain.Enums.OfferStatus.Active.ToString() ? "badge-primary" : o.Status == Discounts.Domain.Enums.OfferStatus.Pending.ToString() ? "badge-category" : "bg-secondary")">@o.Status</span></td>
-            <td><a asp-action="Edit" asp-route-id="@o.Id" class="btn btn-sm btn-highlight">Edit</a></td>
+            <td>$@(o.DiscountedPrice * (o.TotalCount - o.RemainingCount))</td>
+            <td>@(o.TotalCount - o.RemainingCount) / @o.TotalCount</td>
+            <td><i class="fas fa-heart text-danger me-1"></i>@o.FavouriteCount</td>
+            <td>
+                @if (o.Status == Discounts.Domain.Enums.OfferStatus.Denied.ToString() && !string.IsNullOrEmpty(o.RejectionReason))
+                {
+                    <button type="button"
+                            class="badge bg-secondary border-0"
+                            style="cursor:pointer;"
+                            data-bs-toggle="modal" data-bs-target="#rejectionModal"
+                            data-offer-name="@o.Name"
+                            data-reason="@o.RejectionReason"
+                            title="Click to see rejection reason">
+                        @o.Status <i class="fas fa-info-circle ms-1"></i>
+                    </button>
+                }
+                else
+                {
+                    <span class="badge @(o.Status == Discounts.Domain.Enums.OfferStatus.Active.ToString() ? "badge-primary" : o.Status == Discounts.Domain.Enums.OfferStatus.Pending.ToString() ? "badge-category" : "bg-secondary")">@o.Status</span>
+                }
+            </td>
+            <td>
+                <div class="d-flex gap-1">
+                    <a asp-controller="OfferBrowse" asp-action="Details" asp-area="" asp-route-id="@o.Id" class="btn btn-sm btn-notice">View</a>
+                    <a asp-action="Edit" asp-route-id="@o.Id" class="btn btn-sm btn-highlight">Edit</a>
+                </div>
+            </td>
         </tr>
     }
     </tbody>
 </table>
+
+@await Html.PartialAsync("_Pagination")
+
+<!-- Rejection Reason Modal -->
+<div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectionModalLabel">Offer Rejected</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1 text-muted">Offer: <strong id="rejectionOfferName"></strong></p>
+                <hr />
+                <p class="mb-1"><strong>Reason from admin:</strong></p>
+                <p id="rejectionReason" class="fst-italic"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const modal = document.getElementById('rejectionModal');
+            if (!modal) return;
+            modal.addEventListener('show.bs.modal', function (e) {
+                const btn = e.relatedTarget;
+                document.getElementById('rejectionOfferName').textContent = btn.dataset.offerName;
+                document.getElementById('rejectionReason').textContent = btn.dataset.reason;
+            });
+        }());
+    </script>
+}

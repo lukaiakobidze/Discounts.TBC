@@ -63,3 +63,5 @@ DiscountsWebApp/Discounts.MVC/wwwroot/
 # OS files
 .DS_Store
 Thumbs.db
+
+.claude/

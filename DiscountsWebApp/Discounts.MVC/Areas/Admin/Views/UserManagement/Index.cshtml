@@ -1,13 +1,15 @@
-@model IReadOnlyList<Discounts.Application.DTOs.Auth.UserDto>
+@model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Auth.UserDto>
 @{
     ViewData["Title"] = "User Management";
+    ViewData["PageNumber"] = Model.PageNumber;
+    ViewData["TotalPages"] = Model.TotalPages;
 }
 
-<h2 class="mb-4">Users</h2>
+<h2 class="mb-4">Users <small class="text-muted fs-6">(@Model.TotalCount total)</small></h2>
 <table class="table table-hover">
     <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody>
-        @foreach (var user in Model)
+    <tbody class="align-middle">
+        @foreach (var user in Model.Items)
         {
             <tr>
                 <td>@user.Email</td>
@@ -23,12 +25,19 @@
                     }
                     else
                     {
-                        <form asp-action="Block" asp-route-id="@user.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-warning">Block</button>
-                        </form>
+                        <button type="button" class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                data-confirm-title="Block User"
+                                data-confirm-message="Block @user.Email? They will lose access to the platform."
+                                data-form-action="@Url.Action("Block", "UserManagement", new { area = "Admin", id = user.Id })">
+                            Block
+                        </button>
                     }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@await Html.PartialAsync("_Pagination")
+@await Html.PartialAsync("_ConfirmModal")

@@ -1,0 +1,36 @@
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalTitle">Confirm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmModalMessage">Are you sure?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="confirmModalForm" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="confirmModalExtra" name="" value="" />
+                    <button type="submit" class="btn btn-warning">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const modal = document.getElementById('confirmModal');
+        if (!modal) return;
+        modal.addEventListener('show.bs.modal', function (e) {
+            const btn = e.relatedTarget;
+            document.getElementById('confirmModalTitle').textContent = btn.dataset.confirmTitle || 'Confirm';
+            document.getElementById('confirmModalMessage').textContent = btn.dataset.confirmMessage || 'Are you sure?';
+            const form = document.getElementById('confirmModalForm');
+            form.action = btn.dataset.formAction || '';
+            const extra = document.getElementById('confirmModalExtra');
+            extra.name = btn.dataset.extraName || '';
+            extra.value = btn.dataset.extraValue || '';
+        });
+    }());
+</script>

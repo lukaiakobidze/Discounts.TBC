@@ -5,6 +5,8 @@ using Discounts.Application;
 using Discounts.Data.Context;
 using Discounts.Infrastructure;
 using Discounts.Infrastructure.Data.Seed;
+using Discounts.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Serilog;
 
 namespace Discounts.MVC
@@ -34,6 +36,11 @@ namespace Discounts.MVC
                     options.LoginPath = "/Account/Login";
                     options.AccessDeniedPath = "/Account/AccessDenied";
                     options.ExpireTimeSpan = TimeSpan.FromHours(2);
+                });
+
+                builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+                {
+                    options.ValidationInterval = TimeSpan.Zero;
                 });
 
                 builder.Services.AddControllersWithViews();

@@ -9,6 +9,8 @@ namespace Discounts.Application.Interfaces.Repositories
         ICouponRepository Coupons { get; }
         ICategoryRepository Categories { get; }
         IGlobalSettingRepository GlobalSettings { get; }
+        IFavouriteRepository Favourites { get; }
+        IReviewRepository Reviews { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

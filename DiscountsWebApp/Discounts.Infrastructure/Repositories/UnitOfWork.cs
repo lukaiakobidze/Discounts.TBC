@@ -9,7 +9,8 @@ namespace Discounts.Infrastructure.Repositories
     {
         private readonly DiscountsDbContext _dbContext;
         public UnitOfWork(DiscountsDbContext dbContext, IOfferRepository offers, IReservationRepository reservations,
-            ICouponRepository coupons, ICategoryRepository categories, IGlobalSettingRepository globalSettings)
+            ICouponRepository coupons, ICategoryRepository categories, IGlobalSettingRepository globalSettings,
+            IFavouriteRepository favourites, IReviewRepository reviews)
         {
             _dbContext = dbContext;
             Offers = offers;
@@ -17,6 +18,8 @@ namespace Discounts.Infrastructure.Repositories
             Coupons = coupons;
             Categories = categories;
             GlobalSettings = globalSettings;
+            Favourites = favourites;
+            Reviews = reviews;
         }
 
         public IOfferRepository Offers { get; }
@@ -28,6 +31,10 @@ namespace Discounts.Infrastructure.Repositories
         public ICategoryRepository Categories { get; }
 
         public IGlobalSettingRepository GlobalSettings { get; }
+
+        public IFavouriteRepository Favourites { get; }
+
+        public IReviewRepository Reviews { get; }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

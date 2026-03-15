@@ -133,6 +133,7 @@ namespace Discounts.Infrastructure.Identity
 
             user.IsBlocked = true;
             await _userManager.UpdateAsync(user).ConfigureAwait(false);
+            await _userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
             await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue).ConfigureAwait(false);
         }
 

@@ -5,6 +5,7 @@ using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Discounts.Domain.Entities;
 using Discounts.Domain.Enums;
+using Microsoft.Extensions.Caching.Memory;
 using MockQueryable;
 using Moq;
 
@@ -22,7 +23,7 @@ public class MerchantDashboardQueryHandlerTests
     {
         _unitOfWorkMock.Setup(x => x.Offers).Returns(_offersRepoMock.Object);
         _currentUserMock.Setup(x => x.UserId).Returns(MerchantId);
-        _handler = new MerchantDashboardQueryHandler(_currentUserMock.Object, _unitOfWorkMock.Object);
+        _handler = new MerchantDashboardQueryHandler(_currentUserMock.Object, _unitOfWorkMock.Object, new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]

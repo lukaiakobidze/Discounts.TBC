@@ -1,22 +1,30 @@
 @using Discounts.Domain.Constants
+@using Discounts.Application.DTOs.Reviews
 @model Discounts.Application.DTOs.Offers.OfferDto
 @{
     ViewData["Title"] = Model.Name;
+    var reviews = ViewBag.Reviews as IReadOnlyList<ReviewDto> ?? new List<ReviewDto>();
+    var avgStars = reviews.Count > 0 ? reviews.Average(r => r.Stars) : 0;
 }
 
 <div class="row">
     <div class="col-md-8">
         <div class="card">
-            @if (!string.IsNullOrEmpty(Model.ImagePath))
-            {
-                <img src="@Model.ImagePath" class="card-img-top" alt="@Model.Name" style="height: 180px; object-fit: cover;" />
-            }
-            else
-            {
-                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
-                    <i class="fas fa-tag fa-2x text-muted"></i>
-                </div>
-            }
+            <div class="position-relative">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <img src="@Model.ImagePath" class="card-img-top" alt="@Model.Name" style="height: 180px; object-fit: cover;" />
+                }
+                else
+                {
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                        <i class="fas fa-tag fa-2x text-muted"></i>
+                    </div>
+                }
+                <span class="position-absolute top-0 end-0 m-2 badge rounded-pill" style="background: rgba(0,0,0,0.55); font-size: 0.85rem;">
+                    <i class="fas fa-heart text-danger me-1"></i>@Model.FavouriteCount
+                </span>
+            </div>
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="badge badge-category">@Model.CategoryName</span>
@@ -86,11 +94,69 @@
                             </button>
                         </form>
                     }
+                    @if ((bool)ViewBag.IsFavourited)
+                    {
+                        <form asp-controller="Customer" asp-action="RemoveFavourite" method="post" class="mt-2">
+                            <input type="hidden" name="offerId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="fas fa-heart-broken me-1"></i>Unfavourite
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Customer" asp-action="AddFavourite" method="post" class="mt-2">
+                            <input type="hidden" name="offerId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-notice w-100">
+                                <i class="fas fa-heart me-1"></i>Favourite
+                            </button>
+                        </form>
+                    }
                 }
             </div>
         </div>
     </div>
 </div>
+
+@if (reviews.Count > 0)
+{
+    <div class="mt-4">
+        <h4>
+            Customer Reviews
+            <span class="ms-2 text-warning">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <i class="fas fa-star @(i <= Math.Round(avgStars) ? "text-warning" : "text-muted")"></i>
+                }
+            </span>
+            <small class="text-muted fs-6 ms-1">@avgStars.ToString("F1") / 5 (@reviews.Count review@(reviews.Count == 1 ? "" : "s"))</small>
+        </h4>
+        <div class="row">
+            @foreach (var review in reviews)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-1">
+                                <div>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star @(i <= review.Stars ? "text-warning" : "text-muted")"></i>
+                                    }
+                                </div>
+                                <small class="text-muted">@review.CreatedAt.ToString("MMM dd, yyyy")</small>
+                            </div>
+                            @if (!string.IsNullOrEmpty(review.Comment))
+                            {
+                                <p class="mb-0 mt-1">@review.Comment</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
 
 @section Scripts {
     <script>

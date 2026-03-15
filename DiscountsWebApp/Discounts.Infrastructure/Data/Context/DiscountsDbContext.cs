@@ -18,6 +18,8 @@ namespace Discounts.Data.Context
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<GlobalSetting> GlobalSettings => Set<GlobalSetting>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<Favourite> Favourites => Set<Favourite>();
+        public DbSet<Review> Reviews => Set<Review>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

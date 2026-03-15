@@ -1,12 +1,14 @@
-@model IReadOnlyList<Discounts.Application.DTOs.Coupons.CouponDto>
+@model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Coupons.CouponDto>
 @{
     ViewData["Title"] = "My Coupons";
+    ViewData["PageNumber"] = Model.PageNumber;
+    ViewData["TotalPages"] = Model.TotalPages;
 }
 <h2 class="mb-4"><i class="fas fa-ticket-alt me-2"></i>My Coupons</h2>
-@if (Model != null && Model.Any())
+@if (Model != null && Model.Items.Any())
 {
     <div class="row">
-        @foreach (var coupon in Model)
+        @foreach (var coupon in Model.Items)
         {
             <div class="col-md-6 mb-3">
                 <div class="card">
@@ -30,12 +32,23 @@
                                     <button type="submit" class="btn btn-sm btn-notice">Mark as Used</button>
                                 </form>
                             }
+                            @if (coupon.Status == Discounts.Domain.Enums.CouponStatus.Used)
+                            {
+                                <button type="button" class="btn btn-sm btn-notice"
+                                        data-bs-toggle="modal" data-bs-target="#reviewModal"
+                                        data-coupon-id="@coupon.Id"
+                                        data-offer-name="@coupon.OfferName">
+                                    <i class="fas fa-star me-1"></i>Leave a Review
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
         }
     </div>
+
+    @await Html.PartialAsync("_Pagination")
 }
 else
 {
@@ -44,4 +57,58 @@ else
         <h5>No coupons yet</h5>
         <a asp-controller="OfferBrowse" asp-action="Index" class="btn btn-highlight mt-2">Browse Offers</a>
     </div>
+}
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Leave a Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Customer" asp-action="AddReview" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="couponId" id="reviewCouponId" value="" />
+                <div class="modal-body">
+                    <p class="mb-3">Reviewing: <strong id="reviewOfferName"></strong></p>
+                    <div class="mb-3">
+                        <label class="form-label">Star Rating</label>
+                        <div class="d-flex gap-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="stars" id="star@(i)" value="@i" @(i == 5 ? "checked" : "") required />
+                                    <label class="form-check-label" for="star@(i)">@i <i class="fas fa-star text-warning"></i></label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reviewComment" class="form-label">Comment <span class="text-muted">(optional)</span></label>
+                        <textarea name="comment" id="reviewComment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-highlight"><i class="fas fa-star me-1"></i>Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const reviewModal = document.getElementById('reviewModal');
+            if (!reviewModal) return;
+            reviewModal.addEventListener('show.bs.modal', function (e) {
+                const btn = e.relatedTarget;
+                document.getElementById('reviewCouponId').value = btn.dataset.couponId;
+                document.getElementById('reviewOfferName').textContent = btn.dataset.offerName;
+                document.getElementById('reviewComment').value = '';
+            });
+        }());
+    </script>
 }

@@ -38,9 +38,9 @@ namespace Discounts.MVC.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reject(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Reject(Guid id, string? reason, CancellationToken cancellationToken)
         {
-            await _sender.Send(new RejectOfferCommand(id), cancellationToken).ConfigureAwait(false);
+            await _sender.Send(new RejectOfferCommand(id, reason), cancellationToken).ConfigureAwait(false);
             TempData["Success"] = "Offer rejected.";
             return RedirectToAction(nameof(Index));
         }

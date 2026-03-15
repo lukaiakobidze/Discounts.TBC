@@ -7,5 +7,5 @@ using MediatR;
 namespace Discounts.Application.Features.Offers.Command.RejectOffer
 {
     [ApplicationAuthorize(Role = Roles.Admin)]
-    public record RejectOfferCommand(Guid OfferId) : IRequest<Unit>;
+    public record RejectOfferCommand(Guid OfferId, string? Reason = null) : IRequest<Unit>;
 }

@@ -6,6 +6,7 @@ using Discounts.Application.Features.Auth.Command.RefreshToken;
 using Discounts.Application.Features.Auth.Command.Register;
 using Discounts.Application.Interfaces.Auth;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 
 namespace Discounts.Application.Tests.Auth;
@@ -78,7 +79,7 @@ public class RegisterCommandHandlerTests
 
     public RegisterCommandHandlerTests()
     {
-        _handler = new RegisterCommandHandler(_identityServiceMock.Object);
+        _handler = new RegisterCommandHandler(_identityServiceMock.Object, new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]

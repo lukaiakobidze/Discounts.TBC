@@ -1,0 +1,74 @@
+@{
+    var pageNumber = (int)(ViewData["PageNumber"] ?? 1);
+    var totalPages = (int)(ViewData["TotalPages"] ?? 1);
+
+    if (totalPages <= 1) { return; }
+
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+
+    var baseParams = ViewContext.HttpContext.Request.Query
+        .Where(kv => kv.Key != "pageNumber")
+        .ToDictionary(kv => kv.Key, kv => (object?)kv.Value.ToString());
+
+    if (!string.IsNullOrEmpty(area))
+        baseParams["area"] = area;
+
+    int windowStart = Math.Max(1, pageNumber - 2);
+    int windowEnd = Math.Min(totalPages, pageNumber + 2);
+}
+
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center flex-wrap">
+
+        @* Prev *@
+        @{
+            var prevParams = new Dictionary<string, object?>(baseParams) { ["pageNumber"] = pageNumber - 1 };
+        }
+        <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action(action, controller, prevParams)">&laquo;</a>
+        </li>
+
+        @* First page if window doesn't start at 1 *@
+        @if (windowStart > 1)
+        {
+            var p = new Dictionary<string, object?>(baseParams) { ["pageNumber"] = 1 };
+            <li class="page-item"><a class="page-link" href="@Url.Action(action, controller, p)">1</a></li>
+            if (windowStart > 2)
+            {
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+            }
+        }
+
+        @* Window pages *@
+        @for (int i = windowStart; i <= windowEnd; i++)
+        {
+            var p = new Dictionary<string, object?>(baseParams) { ["pageNumber"] = i };
+            <li class="page-item @(i == pageNumber ? "active" : "")">
+                <a class="page-link" href="@Url.Action(action, controller, p)">@i</a>
+            </li>
+        }
+
+        @* Last page if window doesn't reach it *@
+        @if (windowEnd < totalPages)
+        {
+            if (windowEnd < totalPages - 1)
+            {
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+            }
+            var p = new Dictionary<string, object?>(baseParams) { ["pageNumber"] = totalPages };
+            <li class="page-item"><a class="page-link" href="@Url.Action(action, controller, p)">@totalPages</a></li>
+        }
+
+        @* Next *@
+        @{
+            var nextParams = new Dictionary<string, object?>(baseParams) { ["pageNumber"] = pageNumber + 1 };
+        }
+        <li class="page-item @(pageNumber == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action(action, controller, nextParams)">&raquo;</a>
+        </li>
+
+    </ul>
+    <p class="text-center text-muted small">Page @pageNumber of @totalPages</p>
+</nav>

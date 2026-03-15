@@ -24,7 +24,8 @@ namespace Discounts.Infrastructure
             services.AddDbContext<DiscountsDbContext>((serviceProvider, options) =>
             {
                 var interceptor = serviceProvider.GetRequiredService<AuditFieldsInterceptor>();
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions => sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
                     .AddInterceptors(interceptor);
             });
 
@@ -51,6 +52,8 @@ namespace Discounts.Infrastructure
             services.AddScoped<IReservationRepository, ReservationRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IGlobalSettingRepository, GlobalSettingRepository>();
+            services.AddScoped<IFavouriteRepository, FavouriteRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddHostedService<OfferExpirationWorker>();

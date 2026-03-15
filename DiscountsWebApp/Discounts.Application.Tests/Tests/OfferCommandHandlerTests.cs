@@ -12,6 +12,7 @@ using Discounts.Domain.Entities;
 using Discounts.Domain.Enums;
 using FluentValidation.TestHelper;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 
 namespace Discounts.Application.Tests.Offers;
@@ -25,7 +26,7 @@ public class ApproveOfferCommandHandlerTests
     public ApproveOfferCommandHandlerTests()
     {
         _unitOfWorkMock.Setup(x => x.Offers).Returns(_offersRepoMock.Object);
-        _handler = new ApproveOfferCommandHandler(_unitOfWorkMock.Object);
+        _handler = new ApproveOfferCommandHandler(_unitOfWorkMock.Object, new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]
@@ -77,13 +78,13 @@ public class RejectOfferCommandHandlerTests
     public RejectOfferCommandHandlerTests()
     {
         _unitOfWorkMock.Setup(x => x.Offers).Returns(_offersRepoMock.Object);
-        _handler = new RejectOfferCommandHandler(_unitOfWorkMock.Object);
+        _handler = new RejectOfferCommandHandler(_unitOfWorkMock.Object, new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]
     public async Task Handle_WhenOfferNotFound_ShouldThrowNotFoundException()
     {
-        var command = new RejectOfferCommand(Guid.NewGuid());
+        var command = new RejectOfferCommand(Guid.NewGuid(), "Test reason");
         _offersRepoMock.Setup(x => x.GetByIdAsync(command.OfferId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Offer?)null);
 
@@ -94,7 +95,7 @@ public class RejectOfferCommandHandlerTests
     public async Task Handle_WhenOfferIsNotPending_ShouldThrowConflictException()
     {
         var offer = new Offer { Id = Guid.NewGuid(), Status = OfferStatus.Active };
-        var command = new RejectOfferCommand(offer.Id);
+        var command = new RejectOfferCommand(offer.Id, "Test reason");
         _offersRepoMock.Setup(x => x.GetByIdAsync(command.OfferId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(offer);
 
@@ -102,10 +103,10 @@ public class RejectOfferCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_WithPendingOffer_ShouldSetStatusToDenied()
+    public async Task Handle_WithPendingOffer_ShouldSetStatusToDeniedAndPersistReason()
     {
         var offer = new Offer { Id = Guid.NewGuid(), Status = OfferStatus.Pending };
-        var command = new RejectOfferCommand(offer.Id);
+        var command = new RejectOfferCommand(offer.Id, "Image quality is poor.");
         _offersRepoMock.Setup(x => x.GetByIdAsync(command.OfferId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(offer);
         _unitOfWorkMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
@@ -113,6 +114,7 @@ public class RejectOfferCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None).ConfigureAwait(true);
 
         Assert.Equal(OfferStatus.Denied, offer.Status);
+        Assert.Equal("Image quality is poor.", offer.RejectionReason);
         _offersRepoMock.Verify(x => x.Update(offer), Times.Once);
         Assert.Equal(Unit.Value, result);
     }
@@ -131,7 +133,7 @@ public class CreateOfferCommandHandlerTests
         _unitOfWorkMock.Setup(x => x.Offers).Returns(_offersRepoMock.Object);
         _unitOfWorkMock.Setup(x => x.Categories).Returns(_categoriesRepoMock.Object);
         _currentUserMock.Setup(x => x.UserId).Returns(MerchantId);
-        _handler = new CreateOfferCommandHandler(_unitOfWorkMock.Object, _currentUserMock.Object);
+        _handler = new CreateOfferCommandHandler(_unitOfWorkMock.Object, _currentUserMock.Object, new MemoryCache(new MemoryCacheOptions()));
     }
 
     private static CreateOfferCommand ValidCommand(Guid categoryId) => new(
@@ -255,7 +257,7 @@ public class UpdateOfferCommandHandlerTests
             .Setup(x => x.GetIntValueAsync(GlobalSettingConstants.MerchantEditWindowHours, 24, It.IsAny<CancellationToken>()))
             .ReturnsAsync(24);
         _handler = new UpdateOfferCommandHandler(
-            _unitOfWorkMock.Object, _currentUserMock.Object, _dateTimeMock.Object);
+            _unitOfWorkMock.Object, _currentUserMock.Object, _dateTimeMock.Object, new MemoryCache(new MemoryCacheOptions()));
     }
 
     private static UpdateOfferCommand ValidCommand(Guid offerId, Guid categoryId) => new(

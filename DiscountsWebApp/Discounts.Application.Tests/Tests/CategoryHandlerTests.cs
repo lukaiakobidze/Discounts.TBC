@@ -11,6 +11,7 @@ using Discounts.Domain.Entities;
 using Discounts.Domain.Enums;
 using FluentValidation.TestHelper;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 
 namespace Discounts.Application.Tests.Categories;
@@ -29,7 +30,8 @@ public class CreateCategoryCommandHandlerTests
 
         _handler = new CreateCategoryCommandHandler(
             MockCurrentUserService.Create().Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]
@@ -104,7 +106,8 @@ public class DeleteCategoryCommandHandlerTests
 
         _handler = new DeleteCateogryCommandHandler(
             MockCurrentUserService.Create().Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]
@@ -157,7 +160,8 @@ public class UpdateCategoryCommandHandlerTests
 
         _handler = new UpdateCategoryCommandHandler(
             MockCurrentUserService.Create().Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]

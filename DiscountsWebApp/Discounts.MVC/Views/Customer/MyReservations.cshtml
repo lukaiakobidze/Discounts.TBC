@@ -1,14 +1,16 @@
-﻿@model IReadOnlyList<Discounts.Application.DTOs.Reservations.ReservationDto>
+@model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Reservations.ReservationDto>
 @{
     ViewData["Title"] = "My Reservations";
+    ViewData["PageNumber"] = Model.PageNumber;
+    ViewData["TotalPages"] = Model.TotalPages;
 }
 
 <h2 class="mb-4"><i class="fas fa-ticket-alt me-2"></i>My Reservations</h2>
 
-@if (Model != null && Model.Any())
+@if (Model != null && Model.Items.Any())
 {
     <div class="row">
-        @foreach (var reservation in Model)
+        @foreach (var reservation in Model.Items)
         {
             <div class="col-md-6 mb-3">
                 <div class="card">
@@ -25,16 +27,23 @@
                                 <input type="hidden" name="offerId" value="@reservation.OfferId" />
                                 <button type="submit" class="btn btn-sm btn-highlight">Purchase</button>
                             </form>
-                            <form asp-action="CancelReservation" method="post">
-                                <input type="hidden" name="reservationId" value="@reservation.Id" />
-                                <button type="submit" class="btn btn-sm btn-notice">Cancel</button>
-                            </form>
+                            <button type="button" class="btn btn-sm btn-warning"
+                                    data-bs-toggle="modal" data-bs-target="#confirmModal"
+                                    data-confirm-title="Cancel Reservation"
+                                    data-confirm-message="Cancel your reservation for '@reservation.OfferName'?"
+                                    data-form-action="@Url.Action("CancelReservation", "Customer")"
+                                    data-extra-name="reservationId"
+                                    data-extra-value="@reservation.Id">
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         }
     </div>
+
+    @await Html.PartialAsync("_Pagination")
 }
 else
 {
@@ -44,3 +53,5 @@ else
         <a asp-controller="OfferBrowse" asp-action="Index" class="btn btn-highlight mt-2">Browse Offers</a>
     </div>
 }
+
+@await Html.PartialAsync("_ConfirmModal")

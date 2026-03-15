@@ -6,6 +6,7 @@ using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Discounts.Application.Tests.Mocks;
 using Discounts.Domain.Constants;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 
 namespace Discounts.Application.Tests.Admin;
@@ -26,7 +27,8 @@ public class AdminDashboardQueryHandlerTests
         _handler = new AdminDashboardQueryHandler(
             MockCurrentUserService.Create().Object,
             _unitOfWorkMock.Object,
-            _identityServiceMock.Object);
+            _identityServiceMock.Object,
+            new MemoryCache(new MemoryCacheOptions()));
     }
 
     [Fact]

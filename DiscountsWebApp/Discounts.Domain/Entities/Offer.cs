@@ -22,8 +22,13 @@ namespace Discounts.Domain.Entities
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
 
+        public int FavouriteCount { get; set; }
+        public string? RejectionReason { get; set; }
+
         public ICollection<Coupon> Coupons { get; set; } = new List<Coupon>();
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public ICollection<Favourite> Favourites { get; set; } = new List<Favourite>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
         [Timestamp]
         public byte[] RowVersion { get; set; } = null!;

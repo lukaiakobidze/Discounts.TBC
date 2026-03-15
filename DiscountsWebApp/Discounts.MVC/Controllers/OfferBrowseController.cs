@@ -2,9 +2,11 @@
 
 using Discounts.Application.Features.Categories.Query.GetAllCategories;
 using Discounts.Application.Features.Coupons.Query.GetMyCoupons;
+using Discounts.Application.Features.Favourites.Queries.GetMyFavourites;
 using Discounts.Application.Features.Offers.Query.GetOfferById;
 using Discounts.Application.Features.Offers.Query.SearchOffers;
 using Discounts.Application.Features.Reservations.Query.GetMyReservations;
+using Discounts.Application.Features.Reviews.Queries.GetOfferReviews;
 using Discounts.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,12 +37,16 @@ namespace Discounts.MVC.Controllers
             {
                 var myCoupons = await _sender.Send(new GetMyCouponsQuery(), cancellationToken).ConfigureAwait(false);
                 var myReservations = await _sender.Send(new GetMyReservationsQuery(), cancellationToken).ConfigureAwait(false);
+                var myFavourites = await _sender.Send(new GetMyFavouritesQuery(), cancellationToken).ConfigureAwait(false);
 
                 ViewBag.IsReserved = myReservations.Any(x => x.OfferId == id);
                 ViewBag.IsPurchased = myCoupons.Any(x => x.OfferId == id);
+                ViewBag.IsFavourited = myFavourites.Any(x => x.Id == id);
             }
 
             var offer = await _sender.Send(new GetOfferByIdQuery(id), cancellationToken).ConfigureAwait(false);
+            var reviews = await _sender.Send(new GetOfferReviewsQuery(id), cancellationToken).ConfigureAwait(false);
+            ViewBag.Reviews = reviews;
             return View(offer);
         }
     }

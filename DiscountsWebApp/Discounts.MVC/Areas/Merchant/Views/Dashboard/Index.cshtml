@@ -1,6 +1,14 @@
+@using Discounts.Application.DTOs.Coupons
 @model Discounts.Application.DTOs.Stats.MerchantDashboardDto
 @{
     ViewData["Title"] = "Merchant Dashboard";
+    var salesHistory = ViewBag.SalesHistory as IReadOnlyList<CouponDto> ?? new List<CouponDto>();
+    var topOffers = salesHistory
+        .GroupBy(c => c.OfferName)
+        .Select(g => new { Name = g.Key, Id = g.First().OfferId, Count = g.Count() })
+        .OrderByDescending(x => x.Count)
+        .Take(5)
+        .ToList();
 }
 <h2 class="mb-4">Dashboard</h2>
 <div class="row">
@@ -20,3 +28,84 @@
         <div class="card text-center p-3"><h3>$@Model.TotalRevenue.ToString("F2")</h3><small class="text-muted">Revenue</small></div>
     </div>
 </div>
+
+@if (topOffers.Count > 0)
+{
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card p-2">
+                <h6 class="mb-2">Top Offers by Sales</h6>
+                <table class="table table-sm table-borderless mb-0" style="font-size:0.8rem;">
+                    <thead class="table-light"><tr><th>#</th><th>Offer</th><th>Sold</th></tr></thead>
+                    <tbody>
+                        @for (int i = 0; i < topOffers.Count; i++)
+                        {
+                            <tr>
+                                <td class="py-1">@(i + 1)</td>
+                                <td class="py-1" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@topOffers[i].Name</td>
+                                <td class="py-1"><strong>@topOffers[i].Count</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-8 mb-4">
+            <div class="card p-2">
+                <h6 class="mb-2">Coupons Sold per Offer</h6>
+                <canvas id="salesChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @if (topOffers.Count > 0)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script>
+            (function () {
+                const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(topOffers.Select(x => x.Name).ToList()));
+                const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(topOffers.Select(x => x.Count).ToList()));
+                const offerIds = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(topOffers.Select(x => x.Id).ToList()));
+                const canvas = document.getElementById('salesChart');
+                canvas.style.cursor = 'pointer';
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Coupons Sold',
+                            data: data,
+                            backgroundColor: 'rgba(91, 155, 140, 0.7)',
+                            borderColor: 'rgba(57, 99, 90, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        onClick: (evt, elements) => {
+                            if (elements.length > 0) {
+                                const idx = elements[0].index;
+                                window.location.href = `/OfferBrowse/Details/${offerIds[idx]}`;
+                            }
+                        },
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    font: { size: 11 },
+                                    callback: function(value, index) {
+                                        const label = this.getLabelForValue(index);
+                                        return label.length > 15 ? label.substring(0, 15) + '…' : label;
+                                    }
+                                }
+                            },
+                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } }
+                        }
+                    }
+                });
+            }());
+        </script>
+    }
+}

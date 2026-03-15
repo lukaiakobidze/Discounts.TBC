@@ -1,17 +1,19 @@
-@model IReadOnlyList<Discounts.Application.DTOs.Categories.CategoryDto>
+@model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Categories.CategoryDto>
 @{
     ViewData["Title"] = "Categories";
+    ViewData["PageNumber"] = Model.PageNumber;
+    ViewData["TotalPages"] = Model.TotalPages;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Categories</h2>
+    <h2>Categories <small class="text-muted fs-6">(@Model.TotalCount total)</small></h2>
     <a asp-action="Create" class="btn btn-highlight"><i class="fas fa-plus me-1"></i>Add Category</a>
 </div>
 
 <table class="table table-hover">
     <thead><tr><th>Name</th><th>Description</th><th>Offers</th><th>Actions</th></tr></thead>
-    <tbody>
-        @foreach (var cat in Model)
+    <tbody class="align-middle">
+        @foreach (var cat in Model.Items)
         {
             <tr>
                 <td>@cat.Name</td>
@@ -19,11 +21,18 @@
                 <td>@cat.OfferCount</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-highlight">Edit</a>
-                    <form asp-action="Delete" asp-route-id="@cat.Id" method="post" class="d-inline">
-                        <button class="btn btn-sm btn-warning" onclick="return confirm('Delete this category?')">Delete</button>
-                    </form>
+                    <button type="button" class="btn btn-sm btn-warning"
+                            data-bs-toggle="modal" data-bs-target="#confirmModal"
+                            data-confirm-title="Delete Category"
+                            data-confirm-message="Delete '@cat.Name'? This cannot be undone."
+                            data-form-action="@Url.Action("Delete", "Category", new { area = "Admin", id = cat.Id })">
+                        Delete
+                    </button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@await Html.PartialAsync("_Pagination")
+@await Html.PartialAsync("_ConfirmModal")

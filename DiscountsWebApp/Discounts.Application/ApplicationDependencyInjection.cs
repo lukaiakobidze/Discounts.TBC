@@ -23,6 +23,8 @@ namespace Discounts.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 
+            services.AddMemoryCache();
+
             MappingConfig.Configure();
 
             return services;

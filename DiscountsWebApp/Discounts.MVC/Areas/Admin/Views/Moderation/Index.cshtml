@@ -1,15 +1,17 @@
 @model Discounts.Application.Models.PaginatedList<Discounts.Application.DTOs.Offers.OfferDto>
 @{
     ViewData["Title"] = "Offer Moderation";
+    ViewData["PageNumber"] = Model.PageNumber;
+    ViewData["TotalPages"] = Model.TotalPages;
 }
 
-<h2 class="mb-4">Pending Offers</h2>
+<h2 class="mb-4">Pending Offers <small class="text-muted fs-6">(@Model.TotalCount total)</small></h2>
 
 @if (Model.Items.Any())
 {
     <table class="table table-hover">
         <thead><tr><th>Title</th><th>Merchant</th><th>Price</th><th>Created</th><th>Actions</th></tr></thead>
-        <tbody>
+        <tbody class="align-middle">
             @foreach (var offer in Model.Items)
             {
                 <tr>
@@ -21,9 +23,12 @@
                         <form asp-action="Approve" asp-route-id="@offer.Id" method="post" class="d-inline">
                             <button class="btn btn-sm btn-highlight"><i class="fas fa-check"></i></button>
                         </form>
-                        <form asp-action="Reject" asp-route-id="@offer.Id" method="post" class="d-inline">
-                            <button class="btn btn-sm btn-warning"><i class="fas fa-times"></i></button>
-                        </form>
+                        <button type="button" class="btn btn-sm btn-warning"
+                                data-bs-toggle="modal" data-bs-target="#rejectModal"
+                                data-action="@Url.Action("Reject", "Moderation", new { area = "Admin", id = offer.Id })"
+                                data-offer-name="@offer.Name">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </td>
                 </tr>
             }
@@ -33,4 +38,48 @@
 else
 {
     <p class="text-muted">No pending offers to review.</p>
+}
+
+@await Html.PartialAsync("_Pagination")
+
+<!-- Reject Reason Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Offer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rejectForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <p class="mb-3">Rejecting: <strong id="rejectOfferName"></strong></p>
+                    <div class="mb-3">
+                        <label for="rejectReason" class="form-label">Rejection Reason <span class="text-muted">(optional)</span></label>
+                        <textarea name="reason" id="rejectReason" class="form-control" rows="3"
+                                  placeholder="Explain why this offer is being rejected so the merchant can fix it..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-times me-1"></i>Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const rejectModal = document.getElementById('rejectModal');
+            if (!rejectModal) return;
+            rejectModal.addEventListener('show.bs.modal', function (e) {
+                const btn = e.relatedTarget;
+                document.getElementById('rejectForm').action = btn.dataset.action;
+                document.getElementById('rejectOfferName').textContent = btn.dataset.offerName;
+                document.getElementById('rejectReason').value = '';
+            });
+        }());
+    </script>
 }

@@ -12,13 +12,17 @@ namespace Discounts.Application.Tests.Mocks
                        Mock<ICategoryRepository> Categories,
                        Mock<ICouponRepository> Coupons,
                        Mock<IReservationRepository> Reservations,
-                       Mock<IGlobalSettingRepository> GlobalSettings) Create()
+                       Mock<IGlobalSettingRepository> GlobalSettings,
+                       Mock<IFavouriteRepository> Favourites,
+                       Mock<IReviewRepository> Reviews) Create()
         {
             var offers = new Mock<IOfferRepository>();
             var categories = new Mock<ICategoryRepository>();
             var coupons = new Mock<ICouponRepository>();
             var reservations = new Mock<IReservationRepository>();
             var globalSettings = new Mock<IGlobalSettingRepository>();
+            var favourites = new Mock<IFavouriteRepository>();
+            var reviews = new Mock<IReviewRepository>();
             var uow = new Mock<IUnitOfWork>();
 
             uow.Setup(u => u.Offers).Returns(offers.Object);
@@ -26,9 +30,11 @@ namespace Discounts.Application.Tests.Mocks
             uow.Setup(u => u.Coupons).Returns(coupons.Object);
             uow.Setup(u => u.Reservations).Returns(reservations.Object);
             uow.Setup(u => u.GlobalSettings).Returns(globalSettings.Object);
+            uow.Setup(u => u.Favourites).Returns(favourites.Object);
+            uow.Setup(u => u.Reviews).Returns(reviews.Object);
             uow.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
-            return (uow, offers, categories, coupons, reservations, globalSettings);
+            return (uow, offers, categories, coupons, reservations, globalSettings, favourites, reviews);
         }
     }
 }

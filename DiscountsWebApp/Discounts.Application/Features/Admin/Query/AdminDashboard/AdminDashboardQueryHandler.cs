@@ -1,11 +1,13 @@
-﻿// Copyright (C) TBC Bank. All Rights Reserved.
+// Copyright (C) TBC Bank. All Rights Reserved.
 
+using Discounts.Application.Constants;
 using Discounts.Application.DTOs.Stats;
 using Discounts.Application.Interfaces.Auth;
 using Discounts.Application.Interfaces.Repositories;
 using Discounts.Domain.Constants;
 using Discounts.Domain.Enums;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Discounts.Application.Features.Admin.Query.AdminDashboard
 {
@@ -14,16 +16,21 @@ namespace Discounts.Application.Features.Admin.Query.AdminDashboard
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUserService;
         private readonly IIdentityService _identityService;
+        private readonly IMemoryCache _cache;
 
-        public AdminDashboardQueryHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IIdentityService identityService)
+        public AdminDashboardQueryHandler(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IIdentityService identityService, IMemoryCache cache)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _identityService = identityService;
+            _cache = cache;
         }
 
         public async Task<AdminDashboardDto> Handle(AdminDashboardQuery request, CancellationToken cancellationToken)
         {
+            if (_cache.TryGetValue(CacheKeys.AdminDashboard, out AdminDashboardDto? cached) && cached != null)
+                return cached;
+
             var customers = await _identityService.GetUsersAsync(Roles.Customer).ConfigureAwait(false);
             var merchants = await _identityService.GetUsersAsync(Roles.Merchant).ConfigureAwait(false);
 
@@ -37,6 +44,11 @@ namespace Discounts.Application.Features.Admin.Query.AdminDashboard
                 ActiveOffers = activeOffers,
                 PendingOffers = pendingOffers
             };
+
+            _cache.Set(CacheKeys.AdminDashboard, statsDto, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            });
 
             return statsDto;
         }

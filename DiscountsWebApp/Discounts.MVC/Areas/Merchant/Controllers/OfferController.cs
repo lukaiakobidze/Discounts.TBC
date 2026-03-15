@@ -6,6 +6,7 @@ using Discounts.Application.Features.Offers.Command.UpdateOffer;
 using Discounts.Application.Features.Offers.Query.GetByMerchantId;
 using Discounts.Application.Features.Offers.Query.GetOfferById;
 using Discounts.Application.Interfaces.Auth;
+using Discounts.Application.Models;
 using Discounts.Domain.Constants;
 using Discounts.MVC.ViewModels;
 using Mapster;
@@ -31,10 +32,14 @@ namespace Discounts.MVC.Areas.Merchant.Controllers
             _env = env;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int pageNumber = 1)
         {
-            var dtos = await _sender.Send(new GetByMerchantIdQuery(_currentUser.UserId!), cancellationToken).ConfigureAwait(false);
-            return View(dtos);
+            const int pageSize = 10;
+            var all = await _sender.Send(new GetByMerchantIdQuery(_currentUser.UserId!), cancellationToken).ConfigureAwait(false);
+            var paged = new PaginatedList<Discounts.Application.DTOs.Offers.OfferDto>(
+                all.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                all.Count, pageNumber, pageSize);
+            return View(paged);
         }
 
         [HttpGet]

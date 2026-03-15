@@ -5,6 +5,7 @@ using Discounts.Application.Features.Categories.Command.DeleteCategory;
 using Discounts.Application.Features.Categories.Command.UpdateCateogry;
 using Discounts.Application.Features.Categories.Query.GetAllCategories;
 using Discounts.Application.Features.Categories.Query.GetCategoryById;
+using Discounts.Application.Models;
 using Discounts.Domain.Constants;
 using Discounts.MVC.ViewModels;
 using MediatR;
@@ -24,10 +25,14 @@ namespace Discounts.MVC.Areas.Admin.Controllers
             _sender = sender;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int pageNumber = 1)
         {
-            var categories = await _sender.Send(new GetAllCategoriesQuery(), cancellationToken).ConfigureAwait(false);
-            return View(categories);
+            const int pageSize = 15;
+            var all = await _sender.Send(new GetAllCategoriesQuery(), cancellationToken).ConfigureAwait(false);
+            var paged = new PaginatedList<Discounts.Application.DTOs.Categories.CategoryDto>(
+                all.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+                all.Count, pageNumber, pageSize);
+            return View(paged);
         }
 
         [HttpGet]
@@ -70,8 +75,15 @@ namespace Discounts.MVC.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            await _sender.Send(new DeleteCategoryCommand(id), cancellationToken).ConfigureAwait(false);
-            TempData["Success"] = "Category deleted.";
+            try
+            {
+                await _sender.Send(new DeleteCategoryCommand(id), cancellationToken).ConfigureAwait(false);
+                TempData["Success"] = "Category deleted.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction(nameof(Index));
         }
     }
