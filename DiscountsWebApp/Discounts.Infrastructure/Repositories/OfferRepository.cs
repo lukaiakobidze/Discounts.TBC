@@ -26,7 +26,7 @@ namespace Discounts.Infrastructure.Repositories
         }
         public async Task<IReadOnlyList<Offer>> GetExpiredOffersAsync(DateTime now, CancellationToken cancellationToken = default)
         {
-            return await _dbSet.Where(o => o.ValidTo < now).ToListAsync(cancellationToken).ConfigureAwait(false);
+            return await _dbSet.Where(o => o.ValidTo < now && o.Status != OfferStatus.Expired).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
         public async Task<IReadOnlyList<Offer>> SearchAsync(string? searchTerm, Guid? categoryId, decimal? minPrice, decimal? maxPrice, CancellationToken cancellationToken = default)
         {

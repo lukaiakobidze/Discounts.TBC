@@ -7,6 +7,7 @@ using Discounts.Application;
 using Discounts.Data.Context;
 using Discounts.Infrastructure;
 using Discounts.Infrastructure.Data.Seed;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Discounts.API
@@ -51,8 +52,12 @@ namespace Discounts.API
 
                 using (var scope = app.Services.CreateScope())
                 {
-                    var context = scope.ServiceProvider.GetRequiredService<DiscountsDbContext>();
-                    await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
+                    var db = scope.ServiceProvider.GetRequiredService<DiscountsDbContext>();
+
+                    Log.Information("Applying database migrations...");
+                    await db.Database.MigrateAsync().ConfigureAwait(false);
+                    Log.Information("Database migrations applied successfully");
+
                     await RoleSeed.SeedRolesAsync(scope.ServiceProvider).ConfigureAwait(false);
                     await AdminSeed.SeedAdminAsync(scope.ServiceProvider).ConfigureAwait(false);
                     await CategorySeed.SeedCategoriesAsync(scope.ServiceProvider).ConfigureAwait(false);
@@ -74,7 +79,7 @@ namespace Discounts.API
 
                 app.Run();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not HostAbortedException)
             {
                 Log.Fatal(ex, "Application terminated unexpectedly");
             }

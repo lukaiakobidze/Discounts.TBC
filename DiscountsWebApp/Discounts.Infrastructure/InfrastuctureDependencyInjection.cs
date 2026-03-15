@@ -23,8 +23,12 @@ namespace Discounts.Infrastructure
             services.AddSingleton<AuditFieldsInterceptor>();
             services.AddDbContext<DiscountsDbContext>((serviceProvider, options) =>
             {
+                var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+                    ?? configuration.GetConnectionString("DefaultConnection")
+                    ?? "Server=localhost;Database=TBC_Discounts;Trusted_Connection=True;TrustServerCertificate=True";
+
                 var interceptor = serviceProvider.GetRequiredService<AuditFieldsInterceptor>();
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                options.UseSqlServer(connectionString,
                     sqlOptions => sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
                     .AddInterceptors(interceptor);
             });
